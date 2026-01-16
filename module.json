@@ -1,0 +1,16 @@
+{
+    "name": "DefaultTheme",
+    "alias": "defaulttheme",
+    "description": "The default Cartismo storefront theme. Clean, fast, and fully responsive.",
+    "keywords": ["theme", "storefront", "default"],
+    "priority": 0,
+    "providers": [
+        "Modules\\DefaultTheme\\Providers\\DefaultThemeServiceProvider"
+    ],
+    "files": [],
+    "type": "themes",
+    "version": "1.0.0",
+    "author": "Cartismo",
+    "is_core": true,
+    "preview_image": "Resources/assets/images/default-preview.svg"
+}
