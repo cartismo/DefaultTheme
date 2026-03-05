@@ -2,24 +2,21 @@
 import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
     order: Object,
 });
 
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
-
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
 </script>
 
 <template>
-    <StorefrontLayout :title="`Поръчка ${order.order_number}`">
+    <StorefrontLayout :title="t('account.order_detail', { number: order.order_number })">
         <div class="bg-gray-50 min-h-screen py-8">
             <div class="max-w-4xl mx-auto px-4">
                 <!-- Back Link -->
@@ -27,21 +24,21 @@ const formatPrice = (price) => {
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Назад към поръчки
+                    {{ t('account.back_to_orders') }}
                 </Link>
 
                 <!-- Header -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Поръчка {{ order.order_number }}</h1>
+                            <h1 class="text-2xl font-bold text-gray-900">{{ t('account.order_detail', { number: order.order_number }) }}</h1>
                             <p class="text-gray-500 mt-1">{{ order.created_at }}</p>
                         </div>
                         <span
                             class="inline-block px-4 py-2 text-sm font-medium rounded-full"
                             :style="{ backgroundColor: order.status?.color + '20', color: order.status?.color }"
                         >
-                            {{ order.status?.name || 'Изчаква' }}
+                            {{ order.status?.name || t('account.pending') }}
                         </span>
                     </div>
                 </div>
@@ -51,7 +48,7 @@ const formatPrice = (price) => {
                     <div class="lg:col-span-2">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                             <div class="px-6 py-4 border-b border-gray-200">
-                                <h2 class="font-semibold text-gray-900">Продукти</h2>
+                                <h2 class="font-semibold text-gray-900">{{ t('account.order_products') }}</h2>
                             </div>
                             <div class="divide-y divide-gray-200">
                                 <div v-for="item in order.items" :key="item.id" class="p-4 flex gap-4">
@@ -76,7 +73,7 @@ const formatPrice = (price) => {
                         <!-- Order History -->
                         <div v-if="order.history?.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-200 mt-6">
                             <div class="px-6 py-4 border-b border-gray-200">
-                                <h2 class="font-semibold text-gray-900">История</h2>
+                                <h2 class="font-semibold text-gray-900">{{ t('account.order_history_tab') }}</h2>
                             </div>
                             <div class="p-6">
                                 <div class="space-y-4">
@@ -97,27 +94,27 @@ const formatPrice = (price) => {
                     <div class="space-y-6">
                         <!-- Totals -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 class="font-semibold text-gray-900 mb-4">Обобщение</h3>
+                            <h3 class="font-semibold text-gray-900 mb-4">{{ t('account.order_summary') }}</h3>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Междинна сума</span>
+                                    <span class="text-gray-500">{{ t('cart.subtotal') }}</span>
                                     <span class="text-gray-900">{{ formatPrice(order.subtotal) }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Доставка</span>
+                                    <span class="text-gray-500">{{ t('cart.shipping') }}</span>
                                     <span class="text-gray-900">{{ formatPrice(order.shipping_total) }}</span>
                                 </div>
                                 <div v-if="order.tax_total > 0" class="flex justify-between">
-                                    <span class="text-gray-500">ДДС</span>
+                                    <span class="text-gray-500">{{ t('cart.tax') }}</span>
                                     <span class="text-gray-900">{{ formatPrice(order.tax_total) }}</span>
                                 </div>
                                 <div v-if="order.discount_total > 0" class="flex justify-between text-green-600">
-                                    <span>Отстъпка</span>
+                                    <span>{{ t('cart.discount') }}</span>
                                     <span>-{{ formatPrice(order.discount_total) }}</span>
                                 </div>
                                 <hr class="my-2">
                                 <div class="flex justify-between text-lg font-semibold">
-                                    <span class="text-gray-900">Общо</span>
+                                    <span class="text-gray-900">{{ t('cart.total') }}</span>
                                     <span :style="{ color: primaryColor }">{{ formatPrice(order.total) }}</span>
                                 </div>
                             </div>
@@ -125,7 +122,7 @@ const formatPrice = (price) => {
 
                         <!-- Shipping Address -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 class="font-semibold text-gray-900 mb-4">Адрес за доставка</h3>
+                            <h3 class="font-semibold text-gray-900 mb-4">{{ t('account.shipping_address') }}</h3>
                             <div class="text-sm text-gray-600">
                                 <p class="font-medium text-gray-900">{{ order.shipping_address.name }}</p>
                                 <p>{{ order.shipping_address.address }}</p>
@@ -137,7 +134,7 @@ const formatPrice = (price) => {
 
                         <!-- Billing Address -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 class="font-semibold text-gray-900 mb-4">Адрес за фактуриране</h3>
+                            <h3 class="font-semibold text-gray-900 mb-4">{{ t('account.billing_address') }}</h3>
                             <div class="text-sm text-gray-600">
                                 <p class="font-medium text-gray-900">{{ order.billing_address.name }}</p>
                                 <p>{{ order.billing_address.address }}</p>
@@ -150,11 +147,11 @@ const formatPrice = (price) => {
                         <!-- Payment & Shipping Methods -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-500">Метод на доставка</h4>
+                                <h4 class="text-sm font-medium text-gray-500">{{ t('account.shipping_method') }}</h4>
                                 <p class="text-gray-900">{{ order.shipping_method }}</p>
                             </div>
                             <div>
-                                <h4 class="text-sm font-medium text-gray-500">Метод на плащане</h4>
+                                <h4 class="text-sm font-medium text-gray-500">{{ t('account.payment_method') }}</h4>
                                 <p class="text-gray-900">{{ order.payment_method }}</p>
                             </div>
                         </div>

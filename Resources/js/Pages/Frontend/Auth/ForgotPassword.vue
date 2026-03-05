@@ -2,11 +2,13 @@
 import { computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
 const props = defineProps({
     settings: Object,
 });
 
+const { t } = useThemeTranslations();
 const page = usePage();
 const status = computed(() => page.props.flash?.success);
 
@@ -23,8 +25,8 @@ const submit = () => {
 </script>
 
 <template>
-    <StorefrontLayout title="Забравена парола">
-        <Head title="Забравена парола" />
+    <StorefrontLayout :title="t('auth.forgot_password_title')">
+        <Head :title="t('auth.forgot_password_title')" />
 
         <div class="min-h-[70vh] flex items-center justify-center py-12 px-4">
             <div class="w-full max-w-md">
@@ -37,9 +39,9 @@ const submit = () => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                             </svg>
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-900">Забравена парола?</h1>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.forgot_password_title') }}</h1>
                         <p class="mt-2 text-gray-600 text-sm">
-                            Въведете вашия имейл адрес и ще ви изпратим линк за възстановяване на паролата.
+                            {{ t('auth.forgot_password_text') }}
                         </p>
                     </div>
 
@@ -59,7 +61,7 @@ const submit = () => {
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Имейл адрес
+                                    {{ t('auth.email') }}
                                 </label>
                                 <input
                                     id="email"
@@ -94,7 +96,7 @@ const submit = () => {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                {{ form.processing ? 'Изпращане...' : 'Изпрати линк за възстановяване' }}
+                                {{ form.processing ? t('auth.sending') : t('auth.send_reset_link') }}
                             </button>
                         </form>
                     </div>
@@ -109,7 +111,7 @@ const submit = () => {
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Обратно към входа
+                            {{ t('auth.back_to_login') }}
                         </Link>
                     </div>
                 </div>

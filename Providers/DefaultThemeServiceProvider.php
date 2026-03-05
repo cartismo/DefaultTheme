@@ -1,37 +1,36 @@
 <?php
 
+/*
+ * Copyright (c) LemonDev Ltd. (ЛемънДев ООД)
+ * Email: info@lemondev.co
+ * https://cartismo.com
+ */
+
 namespace Modules\DefaultTheme\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class DefaultThemeServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'DefaultTheme';
     protected string $moduleNameLower = 'defaulttheme';
 
-    /**
-     * Boot the application events.
-     */
     public function boot(): void
     {
         $this->registerConfig();
         $this->registerViews();
+        $this->registerTranslations();
         $this->registerAssets();
-        $this->registerInertiaComponents();
+        $this->shareThemeTranslations();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
-    /**
-     * Register the service provider.
-     */
     public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
     }
 
-    /**
-     * Register config.
-     */
     protected function registerConfig(): void
     {
         $this->publishes([
@@ -40,28 +39,36 @@ class DefaultThemeServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             module_path($this->moduleName, 'Config/config.php'),
-            $this->moduleNameLower
+            $this->moduleNameLower,
         );
     }
 
-    /**
-     * Register views.
-     */
     protected function registerViews(): void
     {
         $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], ['views', $this->moduleNameLower . '-module-views']);
 
-        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+        $this->loadViewsFrom(
+            array_merge($this->getPublishableViewPaths(), [$sourcePath]),
+            $this->moduleNameLower,
+        );
     }
 
-    /**
-     * Register and publish assets.
-     */
+    protected function registerTranslations(): void
+    {
+        $langPath = module_path($this->moduleName, 'Resources/lang');
+
+        $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
+
+        $this->publishes([
+            $langPath => $this->app->langPath('modules/' . $this->moduleNameLower),
+        ], ['lang', $this->moduleNameLower . '-module-lang']);
+    }
+
     protected function registerAssets(): void
     {
         $this->publishes([
@@ -70,17 +77,13 @@ class DefaultThemeServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register Inertia page components from module.
+     * Share theme translations with all Inertia responses.
      */
-    protected function registerInertiaComponents(): void
+    protected function shareThemeTranslations(): void
     {
-        // This allows Inertia::render('DefaultTheme::Admin/Settings') to work
-        // The actual Vue components are loaded via Vite config
+        Inertia::share('themeTranslations', fn () => trans($this->moduleNameLower . '::theme'));
     }
 
-    /**
-     * Get the services provided by the provider.
-     */
     public function provides(): array
     {
         return [];
@@ -89,11 +92,13 @@ class DefaultThemeServiceProvider extends ServiceProvider
     private function getPublishableViewPaths(): array
     {
         $paths = [];
+
         foreach (config('view.paths') as $path) {
             if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
                 $paths[] = $path . '/modules/' . $this->moduleNameLower;
             }
         }
+
         return $paths;
     }
 }

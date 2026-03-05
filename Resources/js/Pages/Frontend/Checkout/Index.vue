@@ -4,6 +4,8 @@ import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import VueSelect from '@/Components/VueSelect.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
@@ -16,16 +18,19 @@ const props = defineProps({
     paymentMethods: Array,
 });
 
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
+
 // LocalStorage key for checkout data
 const CHECKOUT_STORAGE_KEY = 'cartismo_checkout_data';
 
 // Current step
 const currentStep = ref(1);
-const steps = [
-    { number: 1, title: 'Информация', icon: 'user' },
-    { number: 2, title: 'Доставка', icon: 'truck' },
-    { number: 3, title: 'Плащане', icon: 'credit-card' },
-];
+const steps = computed(() => [
+    { number: 1, title: t('checkout.step_info'), icon: 'user' },
+    { number: 2, title: t('checkout.step_shipping'), icon: 'truck' },
+    { number: 3, title: t('checkout.step_payment'), icon: 'credit-card' },
+]);
 
 // Get default form data
 const getDefaultFormData = () => ({
@@ -44,8 +49,8 @@ const getDefaultFormData = () => ({
         postcode: '',
         address_1: '',
         address_2: '',
-        office_id: '', // For office delivery (Speedy, Econt)
-        locker_id: '', // For locker delivery
+        office_id: '',
+        locker_id: '',
     },
 
     // For order processing (mapped from delivery)
@@ -69,7 +74,7 @@ const getDefaultFormData = () => ({
     needs_invoice: false,
     billing_profile_id: null,
     invoice: {
-        type: 'company', // 'company' or 'personal'
+        type: 'company',
         company_name: '',
         eik: '',
         vat_number: '',
@@ -100,25 +105,21 @@ const loadSavedCheckoutData = () => {
         const saved = localStorage.getItem(CHECKOUT_STORAGE_KEY);
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Check if data is not too old (24 hours max)
             const savedAt = parsed._savedAt || 0;
             const now = Date.now();
-            const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+            const maxAge = 24 * 60 * 60 * 1000;
 
             if (now - savedAt < maxAge) {
-                // Remove internal fields and return data
                 const { _savedAt, _step, ...formData } = parsed;
                 return {
                     formData,
                     step: _step || 1
                 };
             } else {
-                // Data is too old, clear it
                 localStorage.removeItem(CHECKOUT_STORAGE_KEY);
             }
         }
     } catch (e) {
-        console.error('Error loading saved checkout data:', e);
         localStorage.removeItem(CHECKOUT_STORAGE_KEY);
     }
     return null;
@@ -134,7 +135,7 @@ const saveCheckoutData = () => {
         };
         localStorage.setItem(CHECKOUT_STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (e) {
-        console.error('Error saving checkout data:', e);
+        // silent
     }
 };
 
@@ -142,10 +143,9 @@ const saveCheckoutData = () => {
 const clearSavedCheckoutData = () => {
     try {
         localStorage.removeItem(CHECKOUT_STORAGE_KEY);
-        // Dispatch event for shipping modules to clear their storage
         window.dispatchEvent(new CustomEvent('checkout-complete'));
     } catch (e) {
-        console.error('Error clearing checkout data:', e);
+        // silent
     }
 };
 
@@ -181,7 +181,7 @@ const citySearch = ref('');
 // Shipping calculation
 const calculatedShipping = ref({
     cost: 0,
-    formatted_cost: 'Безплатна',
+    formatted_cost: t('checkout.free'),
 });
 const calculatingShipping = ref(false);
 
@@ -192,16 +192,14 @@ watch(() => form.value.delivery.country_id, async (countryId) => {
         try {
             const response = await axios.get(`/checkout/zones/${countryId}`);
             zones.value = response.data.zones;
-            // Reset city and zone selections
             form.value.delivery.zone_id = '';
             form.value.delivery.city_id = '';
             cities.value = [];
         } catch (error) {
-            console.error('Error loading zones:', error);
+            // silent
         } finally {
             loadingZones.value = false;
         }
-        // Load cities for country
         loadCities();
     } else {
         zones.value = [];
@@ -234,7 +232,7 @@ const loadCities = async () => {
         const response = await axios.get(url);
         cities.value = response.data.cities;
     } catch (error) {
-        console.error('Error loading cities:', error);
+        // silent
     } finally {
         loadingCities.value = false;
     }
@@ -257,7 +255,6 @@ watch(() => form.value.delivery.city_id, (cityId) => {
             form.value.delivery.postcode = city.postcode;
         }
     }
-    // Recalculate shipping when city changes
     calculateShipping();
 });
 
@@ -288,7 +285,7 @@ const calculateShipping = async () => {
             };
         }
     } catch (error) {
-        console.error('Error calculating shipping:', error);
+        // silent
     } finally {
         calculatingShipping.value = false;
     }
@@ -328,22 +325,11 @@ const deliveryType = computed(() => {
 const awaitingDeliveryDetails = computed(() => {
     const method = selectedShippingMethod.value;
     if (!method?.delivery_form?.component) return false;
-    // Has dynamic component - check if delivery details are provided
-    // For office/apt delivery: need office_id
-    // For address delivery: need address fields
     const delivery = form.value.delivery;
-    if (delivery.office_id) return false; // Office selected
-    if (delivery.address_1 && delivery.postcode) return false; // Address provided
+    if (delivery.office_id) return false;
+    if (delivery.address_1 && delivery.postcode) return false;
     return true;
 });
-
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
 
 // Fill from saved address
 const fillFromAddress = (address) => {
@@ -351,7 +337,7 @@ const fillFromAddress = (address) => {
     form.value.last_name = address.last_name;
     form.value.delivery.country_id = address.country_id;
     form.value.delivery.zone_id = address.zone_id || '';
-    form.value.delivery.city_id = ''; // Will need to match by name
+    form.value.delivery.city_id = '';
     form.value.delivery.postcode = address.postcode;
     form.value.delivery.address_1 = address.address_1;
     form.value.delivery.address_2 = address.address_2 || '';
@@ -362,7 +348,6 @@ const mapDeliveryToShipping = () => {
     const delivery = form.value.delivery;
     const city = cities.value.find(c => c.id === delivery.city_id);
 
-    // For office/apt delivery (Speedy, Econt, etc.)
     if (delivery.office_id) {
         form.value.shipping_city = delivery.city_name || delivery.office_city || city?.name || '';
         form.value.shipping_address_1 = delivery.office_name || '';
@@ -371,7 +356,6 @@ const mapDeliveryToShipping = () => {
         form.value.shipping_country_id = delivery.country_id || '';
         form.value.shipping_zone_id = delivery.zone_id || '';
     } else {
-        // Standard address delivery
         form.value.shipping_country_id = delivery.country_id;
         form.value.shipping_zone_id = delivery.zone_id;
         form.value.shipping_city = city?.name || delivery.city_name || '';
@@ -383,8 +367,6 @@ const mapDeliveryToShipping = () => {
 
 // Handle office selection from module component
 const onOfficeSelected = ({ city, office }) => {
-    console.log('Office selected:', { city, office });
-    // Recalculate shipping when office is selected
     calculateShipping();
 };
 
@@ -393,52 +375,47 @@ const validateStep = (step) => {
     errors.value = {};
 
     if (step === 1) {
-        if (!form.value.email) errors.value.email = 'Въведете имейл адрес';
-        else if (!/\S+@\S+\.\S+/.test(form.value.email)) errors.value.email = 'Невалиден имейл адрес';
-        if (!form.value.phone) errors.value.phone = 'Въведете телефон';
-        if (!form.value.first_name) errors.value.first_name = 'Въведете име';
-        if (!form.value.last_name) errors.value.last_name = 'Въведете фамилия';
+        if (!form.value.email) errors.value.email = t('checkout.validation.email_required');
+        else if (!/\S+@\S+\.\S+/.test(form.value.email)) errors.value.email = t('checkout.validation.email_invalid');
+        if (!form.value.phone) errors.value.phone = t('checkout.validation.phone_required');
+        if (!form.value.first_name) errors.value.first_name = t('checkout.validation.first_name_required');
+        if (!form.value.last_name) errors.value.last_name = t('checkout.validation.last_name_required');
     }
 
     if (step === 2) {
-        if (!form.value.shipping_method_id) errors.value.shipping_method_id = 'Изберете метод на доставка';
+        if (!form.value.shipping_method_id) errors.value.shipping_method_id = t('checkout.validation.shipping_required');
 
-        // Validate based on delivery type
         if (deliveryFormConfig.value?.component) {
-            // Module-provided component (e.g., Speedy, Econt)
             const deliveryData = form.value.delivery;
             const componentDeliveryType = deliveryData.delivery_type || deliveryType.value;
 
             if (componentDeliveryType === 'address') {
-                // Address delivery - need city, postcode, address
                 if (!deliveryData.city_name && !deliveryData.city) {
-                    errors.value['delivery.city'] = 'Моля, въведете град';
+                    errors.value['delivery.city'] = t('checkout.validation.city_required');
                 }
                 if (!deliveryData.postcode) {
-                    errors.value['delivery.postcode'] = 'Моля, въведете пощенски код';
+                    errors.value['delivery.postcode'] = t('checkout.validation.postcode_required');
                 }
                 if (!deliveryData.address_1) {
-                    errors.value['delivery.address_1'] = 'Моля, въведете адрес';
+                    errors.value['delivery.address_1'] = t('checkout.validation.address_required');
                 }
             } else {
-                // Office/APT delivery - need office_id
                 if (!deliveryData.office_id) {
-                    errors.value['delivery.office_id'] = 'Моля, изберете офис за доставка';
+                    errors.value['delivery.office_id'] = t('checkout.validation.office_required');
                 }
             }
         } else if (deliveryFormConfig.value?.fields) {
-            // Standard delivery form fields
             for (const field of deliveryFormConfig.value.fields) {
                 if (field.required && !form.value.delivery[field.name]) {
-                    errors.value[`delivery.${field.name}`] = `${field.label} е задължително`;
+                    errors.value[`delivery.${field.name}`] = t('checkout.validation.field_required', { field: field.label });
                 }
             }
         }
     }
 
     if (step === 3) {
-        if (!form.value.payment_method_id) errors.value.payment_method_id = 'Изберете метод на плащане';
-        if (!form.value.terms_accepted) errors.value.terms_accepted = 'Трябва да приемете условията';
+        if (!form.value.payment_method_id) errors.value.payment_method_id = t('checkout.validation.payment_required');
+        if (!form.value.terms_accepted) errors.value.terms_accepted = t('checkout.validation.terms_required');
     }
 
     return Object.keys(errors.value).length === 0;
@@ -448,7 +425,6 @@ const validateStep = (step) => {
 const nextStep = () => {
     if (validateStep(currentStep.value)) {
         if (currentStep.value === 2) {
-            // Map delivery data before moving to payment
             mapDeliveryToShipping();
         }
         currentStep.value = Math.min(currentStep.value + 1, 3);
@@ -464,7 +440,6 @@ const prevStep = () => {
 const submitOrder = async () => {
     if (!validateStep(3)) return;
 
-    // Make sure delivery is mapped
     mapDeliveryToShipping();
 
     isProcessing.value = true;
@@ -474,7 +449,6 @@ const submitOrder = async () => {
         const response = await axios.post('/checkout/process', form.value);
 
         if (response.data.success) {
-            // Clear saved checkout data on successful order
             clearSavedCheckoutData();
             window.location.href = response.data.redirect;
         } else {
@@ -484,7 +458,7 @@ const submitOrder = async () => {
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors || {};
         } else {
-            errors.value.general = error.response?.data?.message || 'Възникна грешка';
+            errors.value.general = error.response?.data?.message || t('checkout.error_occurred');
         }
     } finally {
         isProcessing.value = false;
@@ -498,16 +472,16 @@ onMounted(() => {
 </script>
 
 <template>
-    <StorefrontLayout title="Поръчка">
+    <StorefrontLayout :title="t('checkout.title')">
         <div class="bg-gray-50 min-h-screen py-8">
             <div class="max-w-7xl mx-auto px-4">
                 <!-- Breadcrumb -->
                 <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-                    <Link href="/" class="hover:text-gray-700">Начало</Link>
+                    <Link href="/" class="hover:text-gray-700">{{ t('home') }}</Link>
                     <span>/</span>
-                    <Link href="/cart" class="hover:text-gray-700">Кошница</Link>
+                    <Link href="/cart" class="hover:text-gray-700">{{ t('cart.title') }}</Link>
                     <span>/</span>
-                    <span class="text-gray-900 font-medium">Поръчка</span>
+                    <span class="text-gray-900 font-medium">{{ t('checkout.title') }}</span>
                 </nav>
 
                 <!-- Steps -->
@@ -541,7 +515,7 @@ onMounted(() => {
 
                         <!-- Step 1: Contact Info -->
                         <div v-show="currentStep === 1" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-6">Информация за контакт</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ t('checkout.contact_info') }}</h2>
 
                             <!-- Login Section (for guests) -->
                             <div v-if="!customer" class="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
@@ -553,15 +527,15 @@ onMounted(() => {
                                             </svg>
                                         </div>
                                         <div>
-                                            <p class="text-sm font-medium text-gray-900">Имате акаунт?</p>
-                                            <p class="text-xs text-gray-500">Влезте за по-бързо поръчване</p>
+                                            <p class="text-sm font-medium text-gray-900">{{ t('checkout.have_account') }}</p>
+                                            <p class="text-xs text-gray-500">{{ t('checkout.faster_checkout') }}</p>
                                         </div>
                                     </div>
                                     <Link
                                         :href="`/login?redirect=${encodeURIComponent('/checkout')}`"
                                         class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
                                     >
-                                        Вход
+                                        {{ t('checkout.login') }}
                                     </Link>
                                 </div>
                             </div>
@@ -583,7 +557,7 @@ onMounted(() => {
 
                             <!-- Saved Addresses (for quick name fill) -->
                             <div v-if="addresses?.length > 0" class="mb-6">
-                                <h3 class="text-sm font-medium text-gray-700 mb-3">Бързо попълване от запазени адреси</h3>
+                                <h3 class="text-sm font-medium text-gray-700 mb-3">{{ t('checkout.quick_fill') }}</h3>
                                 <div class="flex flex-wrap gap-2">
                                     <button
                                         v-for="address in addresses"
@@ -599,7 +573,7 @@ onMounted(() => {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <!-- Email -->
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Имейл *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.email_label') }} {{ t('checkout.required') }}</label>
                                     <input
                                         v-model="form.email"
                                         type="email"
@@ -612,20 +586,19 @@ onMounted(() => {
 
                                 <!-- Phone -->
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Телефон *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.phone_label') }} {{ t('checkout.required') }}</label>
                                     <input
                                         v-model="form.phone"
                                         type="tel"
                                         class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
                                         :class="errors.phone ? 'border-red-500' : 'border-gray-300'"
-                                        placeholder="+359 888 123 456"
                                     />
                                     <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone }}</p>
                                 </div>
 
                                 <!-- First Name -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Име *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.first_name') }} {{ t('checkout.required') }}</label>
                                     <input
                                         v-model="form.first_name"
                                         type="text"
@@ -637,7 +610,7 @@ onMounted(() => {
 
                                 <!-- Last Name -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Фамилия *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.last_name') }} {{ t('checkout.required') }}</label>
                                     <input
                                         v-model="form.last_name"
                                         type="text"
@@ -657,14 +630,14 @@ onMounted(() => {
                                         class="rounded border-gray-300 mr-3"
                                         :style="{ color: primaryColor }"
                                     />
-                                    <span class="text-sm font-medium text-gray-900">Желая фактура</span>
+                                    <span class="text-sm font-medium text-gray-900">{{ t('checkout.want_invoice') }}</span>
                                 </label>
 
                                 <!-- Invoice form - expandable -->
                                 <div v-if="form.needs_invoice" class="space-y-4">
                                     <!-- Saved Billing Profiles (for registered customers) -->
                                     <div v-if="customer && billingProfiles?.length > 0" class="mb-4">
-                                        <h3 class="text-sm font-medium text-gray-700 mb-3">Запазени данни за фактуриране</h3>
+                                        <h3 class="text-sm font-medium text-gray-700 mb-3">{{ t('checkout.saved_billing') }}</h3>
                                         <div class="space-y-2">
                                             <label
                                                 v-for="profile in billingProfiles"
@@ -682,11 +655,11 @@ onMounted(() => {
                                                 <div class="flex-1">
                                                     <span class="font-medium text-gray-900 block">{{ profile.display_name }}</span>
                                                     <span class="text-sm text-gray-500">
-                                                        {{ profile.type === 'company' ? `ЕИК: ${profile.eik}` : `ЕГН: ${profile.egn}` }}
-                                                        <span v-if="profile.address"> • {{ profile.city }}, {{ profile.address }}</span>
+                                                        {{ profile.type === 'company' ? `${t('checkout.eik_prefix')} ${profile.eik}` : `${t('checkout.egn_prefix')} ${profile.egn}` }}
+                                                        <span v-if="profile.address"> &bull; {{ profile.city }}, {{ profile.address }}</span>
                                                     </span>
                                                 </div>
-                                                <span v-if="profile.is_default" class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600">По подразбиране</span>
+                                                <span v-if="profile.is_default" class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600">{{ t('checkout.default_label') }}</span>
                                             </label>
 
                                             <!-- New profile option -->
@@ -705,7 +678,7 @@ onMounted(() => {
                                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                                     </svg>
-                                                    <span class="text-gray-600">Нови данни за фактуриране</span>
+                                                    <span class="text-gray-600">{{ t('checkout.new_billing') }}</span>
                                                 </div>
                                             </label>
                                         </div>
@@ -724,7 +697,7 @@ onMounted(() => {
                                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                 </svg>
-                                                <span class="font-medium">Фирма</span>
+                                                <span class="font-medium">{{ t('checkout.company') }}</span>
                                             </label>
                                             <label
                                                 class="flex-1 flex items-center p-3 border rounded-lg cursor-pointer transition-all"
@@ -735,32 +708,32 @@ onMounted(() => {
                                                 <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
-                                                <span class="font-medium">Физическо лице</span>
+                                                <span class="font-medium">{{ t('checkout.individual') }}</span>
                                             </label>
                                         </div>
 
                                         <!-- Company fields -->
                                         <div v-if="form.invoice.type === 'company'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Име на фирма *</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.company_name') }} {{ t('checkout.required') }}</label>
                                                 <input v-model="form.invoice.company_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">ЕИК *</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.eik') }} {{ t('checkout.required') }}</label>
                                                 <input v-model="form.invoice.eik" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="123456789" />
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">МОЛ</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.mol') }}</label>
                                                 <input v-model="form.invoice.mol" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                             <div class="sm:col-span-2">
                                                 <label class="flex items-center cursor-pointer">
                                                     <input type="checkbox" v-model="form.invoice.is_vat_registered" class="rounded border-gray-300 mr-2" />
-                                                    <span class="text-sm text-gray-700">Регистриран по ДДС</span>
+                                                    <span class="text-sm text-gray-700">{{ t('checkout.vat_registered') }}</span>
                                                 </label>
                                             </div>
                                             <div v-if="form.invoice.is_vat_registered" class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">ДДС номер</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.vat_number') }}</label>
                                                 <input v-model="form.invoice.vat_number" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="BG123456789" />
                                             </div>
                                         </div>
@@ -768,11 +741,11 @@ onMounted(() => {
                                         <!-- Personal fields -->
                                         <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Три имена *</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.full_name') }} {{ t('checkout.required') }}</label>
                                                 <input v-model="form.invoice.person_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">ЕГН *</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.egn') }} {{ t('checkout.required') }}</label>
                                                 <input v-model="form.invoice.egn" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="1234567890" />
                                             </div>
                                         </div>
@@ -780,15 +753,15 @@ onMounted(() => {
                                         <!-- Common address fields -->
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                                             <div class="sm:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Адрес</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.address') }}</label>
                                                 <input v-model="form.invoice.address" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Град</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.city') }}</label>
                                                 <input v-model="form.invoice.city" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-1">Пощенски код</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.postcode') }}</label>
                                                 <input v-model="form.invoice.postcode" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
                                             </div>
                                         </div>
@@ -802,7 +775,7 @@ onMounted(() => {
                                     class="px-6 py-3 text-white rounded-lg font-medium"
                                     :style="{ backgroundColor: primaryColor }"
                                 >
-                                    Продължи
+                                    {{ t('checkout.continue') }}
                                 </button>
                             </div>
                         </div>
@@ -812,8 +785,8 @@ onMounted(() => {
                             <!-- Shipping Method Selection -->
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                    <h2 class="text-lg font-semibold text-gray-900">Изберете начин на доставка</h2>
-                                    <p class="text-sm text-gray-500 mt-1">Изберете как искате да получите вашата поръчка</p>
+                                    <h2 class="text-lg font-semibold text-gray-900">{{ t('checkout.choose_shipping') }}</h2>
+                                    <p class="text-sm text-gray-500 mt-1">{{ t('checkout.choose_shipping_text') }}</p>
                                 </div>
 
                                 <div class="p-4 space-y-3">
@@ -839,14 +812,12 @@ onMounted(() => {
                                             :class="form.shipping_method_id === method.id ? 'bg-opacity-10' : 'bg-gray-100 group-hover:bg-gray-200'"
                                             :style="form.shipping_method_id === method.id ? { backgroundColor: (method.primary_color || primaryColor) + '15' } : {}"
                                         >
-                                            <!-- Module-provided SVG logo -->
                                             <span
                                                 v-if="method.logo_svg"
                                                 class="w-8 h-8"
                                                 :style="{ color: method.primary_color || '#374151' }"
                                                 v-html="method.logo_svg"
                                             ></span>
-                                            <!-- Default truck icon -->
                                             <svg v-else class="w-7 h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4zm-2-4V8a1 1 0 00-1-1H5a1 1 0 00-1 1v5m12 0H4m12 0h1a2 2 0 012 2v1m0-3l-3-3h-3m4 0V8a2 2 0 012 2v3z" />
                                             </svg>
@@ -875,7 +846,7 @@ onMounted(() => {
                                                             <svg v-else-if="type === 'address'" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                                             </svg>
-                                                            {{ type === 'office' ? 'Офис' : type === 'apt' ? 'Автомат' : 'До адрес' }}
+                                                            {{ type === 'office' ? t('checkout.delivery_office') : type === 'apt' ? t('checkout.delivery_apt') : t('checkout.delivery_address') }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -883,7 +854,6 @@ onMounted(() => {
                                                 <!-- Price -->
                                                 <div class="text-right ml-4 flex-shrink-0">
                                                     <template v-if="form.shipping_method_id === method.id && method.delivery_form?.component">
-                                                        <!-- Show calculated price for selected method with component -->
                                                         <span v-if="calculatingShipping" class="text-sm text-gray-400">
                                                             <svg class="animate-spin h-4 w-4 inline" fill="none" viewBox="0 0 24 24">
                                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -891,7 +861,7 @@ onMounted(() => {
                                                             </svg>
                                                         </span>
                                                         <span v-else-if="awaitingDeliveryDetails" class="text-sm text-gray-400 italic">
-                                                            Изчислява се
+                                                            {{ t('checkout.calculating') }}
                                                         </span>
                                                         <span v-else class="font-bold text-lg" :style="{ color: primaryColor }">
                                                             {{ calculatedShipping.formatted_cost }}
@@ -899,11 +869,11 @@ onMounted(() => {
                                                     </template>
                                                     <template v-else>
                                                         <span class="font-bold text-lg" :style="{ color: method.cost === 0 ? '#22C55E' : primaryColor }">
-                                                            {{ method.cost > 0 ? formatPrice(method.cost) : 'Безплатна' }}
+                                                            {{ method.cost > 0 ? formatPrice(method.cost) : t('checkout.free') }}
                                                         </span>
                                                     </template>
                                                     <p v-if="method.estimated_days" class="text-xs text-gray-500 mt-0.5">
-                                                        {{ method.estimated_days }} работни дни
+                                                        {{ t('checkout.working_days', { days: method.estimated_days }) }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -928,7 +898,7 @@ onMounted(() => {
                             <!-- Dynamic Delivery Form -->
                             <div v-if="selectedShippingMethod && deliveryFormConfig" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 mb-6">
-                                    {{ deliveryType === 'address' ? 'Адрес за доставка' : deliveryType === 'office' ? 'Офис за доставка' : 'Информация за доставка' }}
+                                    {{ deliveryType === 'address' ? t('checkout.delivery_address_title') : deliveryType === 'office' ? t('checkout.delivery_office_title') : t('checkout.delivery_info_title') }}
                                 </h2>
 
                                 <!-- Module-provided component (e.g., Speedy, Econt) -->
@@ -952,7 +922,7 @@ onMounted(() => {
                                             :class="field.col_span === 2 ? 'sm:col-span-2' : ''"
                                         >
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                {{ field.label }} {{ field.required ? '*' : '' }}
+                                                {{ field.label }} {{ field.required ? t('checkout.required') : '' }}
                                             </label>
 
                                             <!-- Country Select -->
@@ -962,7 +932,7 @@ onMounted(() => {
                                                 :options="countries"
                                                 :reduce="(country) => country.id"
                                                 label="name"
-                                                :placeholder="'Изберете ' + field.label.toLowerCase()"
+                                                :placeholder="t('checkout.select_field', { field: field.label.toLowerCase() })"
                                                 :clearable="false"
                                             />
 
@@ -973,7 +943,7 @@ onMounted(() => {
                                                 :options="zones"
                                                 :reduce="(zone) => zone.id"
                                                 label="name"
-                                                :placeholder="zones.length === 0 ? 'Няма области' : 'Изберете област'"
+                                                :placeholder="zones.length === 0 ? t('checkout.no_zones') : t('checkout.select_zone')"
                                                 :disabled="zones.length === 0"
                                                 :clearable="true"
                                             />
@@ -985,7 +955,7 @@ onMounted(() => {
                                                 :options="cities"
                                                 :reduce="(city) => city.id"
                                                 :get-option-label="(city) => city.postcode ? `${city.name} (${city.postcode})` : city.name"
-                                                :placeholder="loadingCities ? 'Зареждане...' : cities.length === 0 ? 'Изберете държава първо' : 'Изберете град'"
+                                                :placeholder="loadingCities ? t('checkout.loading_cities') : cities.length === 0 ? t('checkout.select_country_first') : t('checkout.select_city')"
                                                 :disabled="loadingCities || cities.length === 0"
                                                 :loading="loadingCities"
                                                 :clearable="true"
@@ -1003,7 +973,7 @@ onMounted(() => {
                                             :class="field.col_span === 2 ? 'sm:col-span-2' : ''"
                                         >
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                {{ field.label }} {{ field.required ? '*' : '' }}
+                                                {{ field.label }} {{ field.required ? t('checkout.required') : '' }}
                                             </label>
                                             <input
                                                 v-model="form.delivery[field.name]"
@@ -1023,7 +993,7 @@ onMounted(() => {
                                             :class="field.col_span === 2 ? 'sm:col-span-2' : ''"
                                         >
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                                {{ field.label }} {{ field.required ? '*' : '' }}
+                                                {{ field.label }} {{ field.required ? t('checkout.required') : '' }}
                                             </label>
                                             <textarea
                                                 v-model="form.delivery[field.name]"
@@ -1046,21 +1016,21 @@ onMounted(() => {
                                     @click="prevStep"
                                     class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
                                 >
-                                    Назад
+                                    {{ t('checkout.back') }}
                                 </button>
                                 <button
                                     @click="nextStep"
                                     class="px-6 py-3 text-white rounded-lg font-medium"
                                     :style="{ backgroundColor: primaryColor }"
                                 >
-                                    Продължи
+                                    {{ t('checkout.continue') }}
                                 </button>
                             </div>
                         </div>
 
                         <!-- Step 3: Payment -->
                         <div v-show="currentStep === 3" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-6">Метод на плащане</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ t('checkout.payment_method') }}</h2>
 
                             <div class="space-y-3">
                                 <label
@@ -1078,15 +1048,12 @@ onMounted(() => {
                                     />
                                     <!-- Payment Icon -->
                                     <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mr-4" :style="form.payment_method_id === method.id ? { backgroundColor: primaryColor + '20' } : {}">
-                                        <!-- Cash icon -->
                                         <svg v-if="method.icon === 'banknotes'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
-                                        <!-- Bank icon -->
                                         <svg v-else-if="method.icon === 'building-library'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                                         </svg>
-                                        <!-- Default card icon -->
                                         <svg v-else class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                         </svg>
@@ -1109,12 +1076,12 @@ onMounted(() => {
 
                             <!-- Comment -->
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Коментар към поръчката</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t('checkout.order_comment') }}</label>
                                 <textarea
                                     v-model="form.comment"
                                     rows="3"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                                    placeholder="Допълнителни инструкции за доставката..."
+                                    :placeholder="t('checkout.comment_placeholder')"
                                 ></textarea>
                             </div>
 
@@ -1128,10 +1095,10 @@ onMounted(() => {
                                         :style="{ color: primaryColor }"
                                     />
                                     <span class="ml-3 text-sm text-gray-600">
-                                        Съгласен съм с
-                                        <a href="/terms" target="_blank" class="underline">Общите условия</a>
-                                        и
-                                        <a href="/privacy" target="_blank" class="underline">Политиката за поверителност</a>
+                                        {{ t('checkout.agree_terms') }}
+                                        <a href="/terms" target="_blank" class="underline">{{ t('checkout.terms') }}</a>
+                                        {{ t('checkout.and') }}
+                                        <a href="/privacy" target="_blank" class="underline">{{ t('checkout.privacy') }}</a>
                                     </span>
                                 </label>
                                 <p v-if="errors.terms_accepted" class="mt-1 text-sm text-red-600">{{ errors.terms_accepted }}</p>
@@ -1142,7 +1109,7 @@ onMounted(() => {
                                     @click="prevStep"
                                     class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50"
                                 >
-                                    Назад
+                                    {{ t('checkout.back') }}
                                 </button>
                                 <button
                                     @click="submitOrder"
@@ -1154,7 +1121,7 @@ onMounted(() => {
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    {{ isProcessing ? 'Обработка...' : 'Завърши поръчката' }}
+                                    {{ isProcessing ? t('checkout.processing') : t('checkout.complete_order') }}
                                 </button>
                             </div>
                         </div>
@@ -1163,7 +1130,7 @@ onMounted(() => {
                     <!-- Order Summary -->
                     <div class="lg:col-span-4 mt-8 lg:mt-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Вашата поръчка</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('checkout.your_order') }}</h2>
 
                             <!-- Items -->
                             <div class="space-y-4 max-h-64 overflow-y-auto">
@@ -1184,11 +1151,11 @@ onMounted(() => {
                             <!-- Totals -->
                             <div class="space-y-2">
                                 <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Междинна сума</span>
+                                    <span>{{ t('checkout.subtotal') }}</span>
                                     <span>{{ formatPrice(cartTotals.subtotal) }}</span>
                                 </div>
                                 <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Доставка</span>
+                                    <span>{{ t('checkout.shipping') }}</span>
                                     <span class="flex items-center">
                                         <template v-if="calculatingShipping">
                                             <svg class="animate-spin h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24">
@@ -1197,7 +1164,7 @@ onMounted(() => {
                                             </svg>
                                         </template>
                                         <template v-else-if="awaitingDeliveryDetails">
-                                            <span class="text-gray-400 italic">Изчислява се...</span>
+                                            <span class="text-gray-400 italic">{{ t('checkout.calculating_shipping') }}</span>
                                         </template>
                                         <template v-else>
                                             {{ calculatedShipping.formatted_cost }}
@@ -1206,20 +1173,20 @@ onMounted(() => {
                                 </div>
                                 <hr class="my-2">
                                 <div class="flex justify-between text-lg font-semibold text-gray-900">
-                                    <span>Общо</span>
+                                    <span>{{ t('checkout.total') }}</span>
                                     <span :style="{ color: primaryColor }">{{ formatPrice(orderTotal) }}</span>
                                 </div>
                             </div>
 
                             <!-- Selected Shipping Method -->
                             <div v-if="selectedShippingMethod" class="mt-4 pt-4 border-t border-gray-100">
-                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Метод на доставка</p>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t('checkout.shipping_method') }}</p>
                                 <p class="text-sm font-medium text-gray-900">{{ selectedShippingMethod.name }}</p>
                             </div>
 
                             <!-- Edit Cart Link -->
                             <Link href="/cart" class="block mt-4 text-center text-sm text-gray-600 hover:text-gray-900">
-                                Редактирай кошницата
+                                {{ t('checkout.edit_cart') }}
                             </Link>
                         </div>
                     </div>

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
 defineOptions({ layout: StorefrontLayout });
 
@@ -10,6 +11,7 @@ const props = defineProps({
     store: Object,
 });
 
+const { t } = useThemeTranslations();
 const page = usePage();
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
 
@@ -21,14 +23,14 @@ const form = useForm({
     message: '',
 });
 
-const subjects = [
-    'Въпрос относно продукт',
-    'Въпрос относно поръчка',
-    'Доставка и плащане',
-    'Връщане и рекламация',
-    'Партньорство',
-    'Друго',
-];
+const subjects = computed(() => [
+    { value: t('contact.subject_product'), label: t('contact.subject_product') },
+    { value: t('contact.subject_order'), label: t('contact.subject_order') },
+    { value: t('contact.subject_shipping'), label: t('contact.subject_shipping') },
+    { value: t('contact.subject_returns'), label: t('contact.subject_returns') },
+    { value: t('contact.subject_partnership'), label: t('contact.subject_partnership') },
+    { value: t('contact.subject_other'), label: t('contact.subject_other') },
+]);
 
 const submit = () => {
     form.post('/contact', {
@@ -47,9 +49,9 @@ const successMessage = computed(() => page.props.flash?.success);
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="text-center mb-12">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Свържете се с нас</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{{ t('contact.title') }}</h1>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Имате въпрос? Ще се радваме да ви помогнем. Изпратете ни съобщение и ще ви отговорим възможно най-бързо.
+                    {{ t('contact.subtitle') }}
                 </p>
             </div>
 
@@ -57,7 +59,7 @@ const successMessage = computed(() => page.props.flash?.success);
                 <!-- Contact Info -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-2xl shadow-sm p-6 lg:p-8 space-y-6">
-                        <h2 class="text-xl font-semibold text-gray-900">Контактна информация</h2>
+                        <h2 class="text-xl font-semibold text-gray-900">{{ t('contact.info_title') }}</h2>
 
                         <!-- Phone -->
                         <div v-if="store?.phone" class="flex items-start space-x-4">
@@ -67,7 +69,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Телефон</p>
+                                <p class="text-sm font-medium text-gray-500">{{ t('contact.phone') }}</p>
                                 <a :href="`tel:${store.phone}`" class="text-gray-900 hover:underline">{{ store.phone }}</a>
                             </div>
                         </div>
@@ -80,7 +82,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Email</p>
+                                <p class="text-sm font-medium text-gray-500">{{ t('contact.email') }}</p>
                                 <a :href="`mailto:${store.email}`" class="text-gray-900 hover:underline">{{ store.email }}</a>
                             </div>
                         </div>
@@ -94,14 +96,14 @@ const successMessage = computed(() => page.props.flash?.success);
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Адрес</p>
+                                <p class="text-sm font-medium text-gray-500">{{ t('contact.address') }}</p>
                                 <p class="text-gray-900">{{ store.address }}</p>
                             </div>
                         </div>
 
                         <!-- Social Links -->
                         <div v-if="store?.social_facebook || store?.social_instagram || store?.social_tiktok || store?.social_youtube" class="pt-6 border-t border-gray-100">
-                            <p class="text-sm font-medium text-gray-500 mb-4">Последвайте ни</p>
+                            <p class="text-sm font-medium text-gray-500 mb-4">{{ t('contact.follow_us') }}</p>
                             <div class="flex space-x-3">
                                 <a v-if="store?.social_facebook" :href="store.social_facebook" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition-colors">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -123,7 +125,7 @@ const successMessage = computed(() => page.props.flash?.success);
                 <!-- Contact Form -->
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-6">Изпратете съобщение</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-6">{{ t('contact.send_message') }}</h2>
 
                         <!-- Success Message -->
                         <div v-if="successMessage" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
@@ -140,7 +142,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                 <!-- Name -->
                                 <div>
                                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Име <span class="text-red-500">*</span>
+                                        {{ t('contact.name') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         id="name"
@@ -150,7 +152,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all"
                                         :class="{ 'border-red-300': form.errors.name }"
                                         :style="{ '--tw-ring-color': primaryColor }"
-                                        placeholder="Вашето име"
+                                        :placeholder="t('contact.name_placeholder')"
                                     />
                                     <p v-if="form.errors.name" class="mt-1 text-sm text-red-500">{{ form.errors.name }}</p>
                                 </div>
@@ -158,7 +160,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                 <!-- Email -->
                                 <div>
                                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Email <span class="text-red-500">*</span>
+                                        {{ t('contact.email_label') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         id="email"
@@ -168,7 +170,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all"
                                         :class="{ 'border-red-300': form.errors.email }"
                                         :style="{ '--tw-ring-color': primaryColor }"
-                                        placeholder="your@email.com"
+                                        :placeholder="t('contact.email_placeholder')"
                                     />
                                     <p v-if="form.errors.email" class="mt-1 text-sm text-red-500">{{ form.errors.email }}</p>
                                 </div>
@@ -178,7 +180,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                 <!-- Phone -->
                                 <div>
                                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Телефон
+                                        {{ t('contact.phone_label') }}
                                     </label>
                                     <input
                                         id="phone"
@@ -186,14 +188,14 @@ const successMessage = computed(() => page.props.flash?.success);
                                         type="tel"
                                         class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all"
                                         :style="{ '--tw-ring-color': primaryColor }"
-                                        placeholder="+359 ..."
+                                        :placeholder="t('contact.phone_placeholder')"
                                     />
                                 </div>
 
                                 <!-- Subject -->
                                 <div>
                                     <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Тема <span class="text-red-500">*</span>
+                                        {{ t('contact.subject') }} <span class="text-red-500">*</span>
                                     </label>
                                     <select
                                         id="subject"
@@ -203,9 +205,9 @@ const successMessage = computed(() => page.props.flash?.success);
                                         :class="{ 'border-red-300': form.errors.subject }"
                                         :style="{ '--tw-ring-color': primaryColor }"
                                     >
-                                        <option value="">Изберете тема</option>
-                                        <option v-for="subject in subjects" :key="subject" :value="subject">
-                                            {{ subject }}
+                                        <option value="">{{ t('contact.select_subject') }}</option>
+                                        <option v-for="subject in subjects" :key="subject.value" :value="subject.value">
+                                            {{ subject.label }}
                                         </option>
                                     </select>
                                     <p v-if="form.errors.subject" class="mt-1 text-sm text-red-500">{{ form.errors.subject }}</p>
@@ -215,7 +217,7 @@ const successMessage = computed(() => page.props.flash?.success);
                             <!-- Message -->
                             <div>
                                 <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Съобщение <span class="text-red-500">*</span>
+                                    {{ t('contact.message') }} <span class="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     id="message"
@@ -225,7 +227,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:border-transparent transition-all resize-none"
                                     :class="{ 'border-red-300': form.errors.message }"
                                     :style="{ '--tw-ring-color': primaryColor }"
-                                    placeholder="Напишете вашето съобщение тук..."
+                                    :placeholder="t('contact.message_placeholder')"
                                 ></textarea>
                                 <p v-if="form.errors.message" class="mt-1 text-sm text-red-500">{{ form.errors.message }}</p>
                             </div>
@@ -242,7 +244,7 @@ const successMessage = computed(() => page.props.flash?.success);
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    {{ form.processing ? 'Изпращане...' : 'Изпрати съобщение' }}
+                                    {{ form.processing ? t('contact.sending') : t('contact.send') }}
                                 </button>
                             </div>
                         </form>

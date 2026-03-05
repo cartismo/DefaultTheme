@@ -4,6 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../../Components/ProductCard.vue';
 import Pagination from '@/Components/Pagination.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
 const props = defineProps({
     settings: Object,
@@ -11,6 +12,8 @@ const props = defineProps({
     filters: Object,
     currentFilters: Object,
 });
+
+const { t } = useThemeTranslations();
 
 // View mode (grid/list)
 const viewMode = ref('grid');
@@ -76,13 +79,13 @@ const hasActiveFilters = computed(() => {
 </script>
 
 <template>
-    <StorefrontLayout title="Всички продукти">
+    <StorefrontLayout :title="t('all_products')">
         <div class="bg-gray-50 min-h-screen">
             <!-- Header -->
             <div class="bg-white border-b border-gray-200">
                 <div class="max-w-7xl mx-auto px-4 py-8">
-                    <h1 class="text-3xl font-bold text-gray-900">Всички продукти</h1>
-                    <p class="text-gray-600 mt-2">{{ products.total }} продукта</p>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ t('all_products') }}</h1>
+                    <p class="text-gray-600 mt-2">{{ t('listing.product_count', { count: products.total }) }}</p>
                 </div>
             </div>
 
@@ -92,19 +95,19 @@ const hasActiveFilters = computed(() => {
                     <div class="hidden lg:block w-64 flex-shrink-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="font-semibold text-gray-900">Филтри</h3>
+                                <h3 class="font-semibold text-gray-900">{{ t('listing.filters') }}</h3>
                                 <button
                                     v-if="hasActiveFilters"
                                     @click="resetFilters"
                                     class="text-sm text-red-600 hover:text-red-700"
                                 >
-                                    Изчисти
+                                    {{ t('clear') }}
                                 </button>
                             </div>
 
                             <!-- Categories -->
                             <div class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-3">Категории</h4>
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('categories') }}</h4>
                                 <div class="space-y-2 max-h-48 overflow-y-auto">
                                     <label
                                         v-for="category in filters.categories"
@@ -125,7 +128,7 @@ const hasActiveFilters = computed(() => {
 
                             <!-- Manufacturers -->
                             <div v-if="filters.manufacturers?.length > 0" class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-3">Производител</h4>
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.manufacturers') }}</h4>
                                 <div class="space-y-2 max-h-48 overflow-y-auto">
                                     <label
                                         v-for="manufacturer in filters.manufacturers"
@@ -146,19 +149,19 @@ const hasActiveFilters = computed(() => {
 
                             <!-- Price Range -->
                             <div class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-3">Цена</h4>
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.price_range') }}</h4>
                                 <div class="flex items-center gap-2">
                                     <input
                                         v-model="localFilters.min_price"
                                         type="number"
-                                        placeholder="От"
+                                        :placeholder="t('listing.from_placeholder')"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
                                     />
                                     <span class="text-gray-400">-</span>
                                     <input
                                         v-model="localFilters.max_price"
                                         type="number"
-                                        placeholder="До"
+                                        :placeholder="t('listing.to_placeholder')"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
                                     />
                                 </div>
@@ -166,13 +169,13 @@ const hasActiveFilters = computed(() => {
                                     @click="applyFilters"
                                     class="mt-2 w-full px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                                 >
-                                    Приложи
+                                    {{ t('apply') }}
                                 </button>
                             </div>
 
                             <!-- Availability -->
                             <div class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-3">Наличност</h4>
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.availability') }}</h4>
                                 <label class="flex items-center cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -180,7 +183,7 @@ const hasActiveFilters = computed(() => {
                                         @change="applyFilters"
                                         class="rounded border-gray-300 text-indigo-600"
                                     />
-                                    <span class="ml-2 text-sm text-gray-600">Само налични</span>
+                                    <span class="ml-2 text-sm text-gray-600">{{ t('listing.in_stock_only') }}</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer mt-2">
                                     <input
@@ -189,7 +192,7 @@ const hasActiveFilters = computed(() => {
                                         @change="applyFilters"
                                         class="rounded border-gray-300 text-indigo-600"
                                     />
-                                    <span class="ml-2 text-sm text-gray-600">Само с намаление</span>
+                                    <span class="ml-2 text-sm text-gray-600">{{ t('listing.on_sale_only') }}</span>
                                 </label>
                             </div>
                         </div>
@@ -208,12 +211,12 @@ const hasActiveFilters = computed(() => {
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                     </svg>
-                                    Филтри
+                                    {{ t('listing.filters') }}
                                 </button>
 
                                 <!-- Sort -->
                                 <div class="flex items-center gap-2">
-                                    <span class="text-sm text-gray-600 hidden sm:inline">Сортирай:</span>
+                                    <span class="text-sm text-gray-600 hidden sm:inline">{{ t('listing.sort_label') }}</span>
                                     <select
                                         v-model="localFilters.sort"
                                         @change="applyFilters"
@@ -266,7 +269,7 @@ const hasActiveFilters = computed(() => {
                                 v-if="currentFilters.in_stock"
                                 class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
                             >
-                                Налични
+                                {{ t('listing.in_stock_tag') }}
                                 <button @click="localFilters.in_stock = false; applyFilters()" class="ml-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -277,7 +280,7 @@ const hasActiveFilters = computed(() => {
                                 v-if="currentFilters.sale"
                                 class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm"
                             >
-                                С намаление
+                                {{ t('listing.on_sale_tag') }}
                                 <button @click="localFilters.sale = false; applyFilters()" class="ml-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -311,14 +314,14 @@ const hasActiveFilters = computed(() => {
                             <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Няма намерени продукти</h3>
-                            <p class="text-gray-500 mb-6">Опитай с други филтри или разгледай всички продукти</p>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('listing.no_products') }}</h3>
+                            <p class="text-gray-500 mb-6">{{ t('listing.no_products_text') }}</p>
                             <button
                                 @click="resetFilters"
                                 class="px-6 py-2 text-white rounded-lg"
                                 :style="{ backgroundColor: primaryColor }"
                             >
-                                Изчисти филтрите
+                                {{ t('listing.clear_all_filters') }}
                             </button>
                         </div>
                     </div>
@@ -350,7 +353,7 @@ const hasActiveFilters = computed(() => {
                 <div v-if="showFilters" class="fixed right-0 top-0 h-full w-full max-w-sm bg-white z-50 flex flex-col lg:hidden">
                     <!-- Modal Header -->
                     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                        <h3 class="font-semibold text-gray-900">Филтри</h3>
+                        <h3 class="font-semibold text-gray-900">{{ t('listing.filters') }}</h3>
                         <button @click="showFilters = false" class="p-2 text-gray-400 hover:text-gray-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -360,10 +363,9 @@ const hasActiveFilters = computed(() => {
 
                     <!-- Filters Content -->
                     <div class="flex-1 overflow-y-auto p-6">
-                        <!-- Same filter content as desktop -->
                         <!-- Categories -->
                         <div class="mb-6">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Категории</h4>
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('categories') }}</h4>
                             <div class="space-y-2">
                                 <label v-for="category in filters.categories" :key="category.id" class="flex items-center cursor-pointer">
                                     <input type="radio" :value="category.id" v-model="localFilters.category" class="rounded-full border-gray-300 text-indigo-600" />
@@ -374,7 +376,7 @@ const hasActiveFilters = computed(() => {
 
                         <!-- Manufacturers -->
                         <div v-if="filters.manufacturers?.length > 0" class="mb-6">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Производител</h4>
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.manufacturers') }}</h4>
                             <div class="space-y-2">
                                 <label v-for="manufacturer in filters.manufacturers" :key="manufacturer.id" class="flex items-center cursor-pointer">
                                     <input type="radio" :value="manufacturer.id" v-model="localFilters.manufacturer" class="rounded-full border-gray-300 text-indigo-600" />
@@ -385,24 +387,24 @@ const hasActiveFilters = computed(() => {
 
                         <!-- Price Range -->
                         <div class="mb-6">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Цена</h4>
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.price_range') }}</h4>
                             <div class="flex items-center gap-2">
-                                <input v-model="localFilters.min_price" type="number" placeholder="От" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" />
+                                <input v-model="localFilters.min_price" type="number" :placeholder="t('listing.from_placeholder')" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" />
                                 <span class="text-gray-400">-</span>
-                                <input v-model="localFilters.max_price" type="number" placeholder="До" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" />
+                                <input v-model="localFilters.max_price" type="number" :placeholder="t('listing.to_placeholder')" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" />
                             </div>
                         </div>
 
                         <!-- Availability -->
                         <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Наличност</h4>
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.availability') }}</h4>
                             <label class="flex items-center cursor-pointer">
                                 <input type="checkbox" v-model="localFilters.in_stock" class="rounded border-gray-300 text-indigo-600" />
-                                <span class="ml-2 text-sm text-gray-600">Само налични</span>
+                                <span class="ml-2 text-sm text-gray-600">{{ t('listing.in_stock_only') }}</span>
                             </label>
                             <label class="flex items-center cursor-pointer mt-2">
                                 <input type="checkbox" v-model="localFilters.sale" class="rounded border-gray-300 text-indigo-600" />
-                                <span class="ml-2 text-sm text-gray-600">Само с намаление</span>
+                                <span class="ml-2 text-sm text-gray-600">{{ t('listing.on_sale_only') }}</span>
                             </label>
                         </div>
                     </div>
@@ -410,10 +412,10 @@ const hasActiveFilters = computed(() => {
                     <!-- Modal Footer -->
                     <div class="border-t border-gray-200 px-6 py-4 flex gap-3">
                         <button @click="resetFilters" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium">
-                            Изчисти
+                            {{ t('clear') }}
                         </button>
                         <button @click="applyFilters" class="flex-1 px-4 py-3 text-white rounded-lg font-medium" :style="{ backgroundColor: primaryColor }">
-                            Приложи
+                            {{ t('apply') }}
                         </button>
                     </div>
                 </div>

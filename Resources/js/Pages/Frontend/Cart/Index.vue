@@ -2,12 +2,17 @@
 import { ref, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 import axios from 'axios';
 
 const props = defineProps({
     settings: Object,
     cart: Object,
 });
+
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
 
 // Local cart state for optimistic updates
 const localCart = ref({ ...props.cart });
@@ -34,7 +39,7 @@ const updateQuantity = async (cartKey, newQuantity) => {
             localCart.value = response.data.cart;
         }
     } catch (error) {
-        console.error('Error updating cart:', error);
+        // silent
     } finally {
         isUpdating.value[cartKey] = false;
     }
@@ -51,7 +56,7 @@ const removeItem = async (cartKey) => {
             localCart.value = response.data.cart;
         }
     } catch (error) {
-        console.error('Error removing item:', error);
+        // silent
     } finally {
         isRemoving.value[cartKey] = false;
     }
@@ -59,7 +64,7 @@ const removeItem = async (cartKey) => {
 
 // Clear cart
 const clearCart = async () => {
-    if (!confirm('Сигурни ли сте, че искате да изчистите кошницата?')) return;
+    if (!confirm(t('cart.clear_confirm'))) return;
 
     try {
         const response = await axios.post('/cart/clear');
@@ -68,44 +73,36 @@ const clearCart = async () => {
             localCart.value = response.data.cart;
         }
     } catch (error) {
-        console.error('Error clearing cart:', error);
+        // silent
     }
-};
-
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
 };
 </script>
 
 <template>
-    <StorefrontLayout title="Кошница">
+    <StorefrontLayout :title="t('cart.title')">
         <div class="bg-gray-50 min-h-screen py-8">
             <div class="max-w-7xl mx-auto px-4">
                 <!-- Breadcrumb -->
                 <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-                    <Link href="/" class="hover:text-gray-700">Начало</Link>
+                    <Link href="/" class="hover:text-gray-700">{{ t('home') }}</Link>
                     <span>/</span>
-                    <span class="text-gray-900 font-medium">Кошница</span>
+                    <span class="text-gray-900 font-medium">{{ t('cart.title') }}</span>
                 </nav>
 
-                <h1 class="text-3xl font-bold text-gray-900 mb-8">Кошница</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ t('cart.title') }}</h1>
 
                 <!-- Empty Cart -->
                 <div v-if="isEmpty" class="text-center py-16 bg-white rounded-xl border border-gray-200">
                     <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Кошницата е празна</h2>
-                    <p class="text-gray-500 mb-6">Все още не сте добавили продукти в кошницата</p>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ t('cart.empty') }}</h2>
+                    <p class="text-gray-500 mb-6">{{ t('cart.empty_text') }}</p>
                     <Link href="/products" class="inline-flex items-center px-6 py-3 text-white rounded-lg font-medium" :style="{ backgroundColor: primaryColor }">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Разгледай продукти
+                        {{ t('cart.browse_products') }}
                     </Link>
                 </div>
 
@@ -116,9 +113,9 @@ const formatPrice = (price) => {
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                             <!-- Header -->
                             <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                                <h2 class="font-semibold text-gray-900">{{ localCart.totals.items_count }} артикула</h2>
+                                <h2 class="font-semibold text-gray-900">{{ t('cart.items_count', { count: localCart.totals.items_count }) }}</h2>
                                 <button @click="clearCart" class="text-sm text-red-600 hover:text-red-700">
-                                    Изчисти кошницата
+                                    {{ t('cart.clear_cart') }}
                                 </button>
                             </div>
 
@@ -212,7 +209,7 @@ const formatPrice = (price) => {
                                     <div class="hidden sm:flex flex-col items-end gap-2">
                                         <span class="font-semibold text-lg" :style="{ color: primaryColor }">{{ formatPrice(item.total) }}</span>
                                         <button @click="removeItem(item.cart_key)" :disabled="isRemoving[item.cart_key]" class="text-sm text-red-600 hover:text-red-700">
-                                            Премахни
+                                            {{ t('cart.remove') }}
                                         </button>
                                     </div>
                                 </div>
@@ -224,39 +221,39 @@ const formatPrice = (price) => {
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Продължи пазаруването
+                            {{ t('cart.continue_shopping') }}
                         </Link>
                     </div>
 
                     <!-- Order Summary -->
                     <div class="lg:col-span-4 mt-8 lg:mt-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Обобщение на поръчката</h2>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('cart.order_summary') }}</h2>
 
                             <div class="space-y-3">
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Междинна сума</span>
+                                    <span>{{ t('cart.subtotal') }}</span>
                                     <span>{{ formatPrice(localCart.totals.subtotal) }}</span>
                                 </div>
 
                                 <div v-if="localCart.totals.discount > 0" class="flex justify-between text-green-600">
-                                    <span>Отстъпка</span>
+                                    <span>{{ t('cart.discount') }}</span>
                                     <span>-{{ formatPrice(localCart.totals.discount) }}</span>
                                 </div>
 
                                 <div v-if="localCart.totals.shipping > 0" class="flex justify-between text-gray-600">
-                                    <span>Доставка</span>
+                                    <span>{{ t('cart.shipping') }}</span>
                                     <span>{{ formatPrice(localCart.totals.shipping) }}</span>
                                 </div>
 
                                 <div v-else class="flex justify-between text-gray-600">
-                                    <span>Доставка</span>
-                                    <span class="text-green-600">Изчислява се при поръчка</span>
+                                    <span>{{ t('cart.shipping') }}</span>
+                                    <span class="text-green-600">{{ t('cart.calculated_at_checkout') }}</span>
                                 </div>
 
                                 <div class="border-t border-gray-200 pt-3 mt-3">
                                     <div class="flex justify-between text-lg font-semibold text-gray-900">
-                                        <span>Общо</span>
+                                        <span>{{ t('cart.total') }}</span>
                                         <span :style="{ color: primaryColor }">{{ formatPrice(localCart.totals.total) }}</span>
                                     </div>
                                 </div>
@@ -271,21 +268,21 @@ const formatPrice = (price) => {
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
-                                Продължи към плащане
+                                {{ t('cart.proceed_checkout') }}
                             </Link>
 
                             <!-- Coupon Code -->
                             <div class="mt-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Код за отстъпка</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('cart.coupon_label') }}</label>
                                 <div class="flex gap-2">
                                     <input
                                         type="text"
-                                        placeholder="Въведете код"
+                                        :placeholder="t('cart.enter_code')"
                                         class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:border-transparent"
                                         :style="{ '--tw-ring-color': primaryColor }"
                                     />
                                     <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">
-                                        Приложи
+                                        {{ t('cart.apply_coupon') }}
                                     </button>
                                 </div>
                             </div>
@@ -297,13 +294,13 @@ const formatPrice = (price) => {
                                         <svg class="w-8 h-8 mx-auto mb-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                         </svg>
-                                        Сигурно плащане
+                                        {{ t('cart.secure_payment') }}
                                     </div>
                                     <div>
                                         <svg class="w-8 h-8 mx-auto mb-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                         </svg>
-                                        Различни методи
+                                        {{ t('cart.various_methods') }}
                                     </div>
                                 </div>
                             </div>

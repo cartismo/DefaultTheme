@@ -1,12 +1,18 @@
 <?php
 
+/*
+ * Copyright (c) LemonDev Ltd. (ЛемънДев ООД)
+ * Email: info@lemondev.co
+ * https://cartismo.com
+ */
+
 namespace Modules\DefaultTheme\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Slider;
 use App\Traits\HasMultiStoreModuleSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,17 +34,9 @@ class SettingsController extends Controller
     {
         $data = $this->getMultiStoreData();
 
-        // Get available sliders if the SimpleSliderGeneral module is installed
-        $sliders = [];
-        if (Schema::hasTable('sliders')) {
-            $sliders = \DB::table('sliders')
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(['id', 'name', 'slug', 'location']);
-        }
-
-        $data['sliders'] = $sliders;
-        $data['theme'] = $data['module']; // For backward compatibility
+        $data['sliders'] = class_exists(Slider::class)
+            ? Slider::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug', 'location'])
+            : [];
 
         return Inertia::render('DefaultTheme::Admin/Settings', $data);
     }

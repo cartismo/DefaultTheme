@@ -2,6 +2,8 @@
 import { computed, inject } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useCurrency } from '@/Composables/useCurrency';
+import { useThemeTranslations } from '../Composables/useThemeTranslations';
 
 const props = defineProps({
     product: {
@@ -24,41 +26,22 @@ const props = defineProps({
 
 const emit = defineEmits(['quick-view', 'add-to-wishlist', 'add-to-compare']);
 
-// Inject theme colors
 const primaryColor = inject('primaryColor', computed(() => '#4F46E5'));
+const { formatPrice } = useCurrency();
+const { t } = useThemeTranslations();
 
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
+const hasDiscount = computed(() => props.product.final_price < props.product.price);
 
-// Check if product has discount
-const hasDiscount = computed(() => {
-    return props.product.final_price < props.product.price;
-});
-
-// Discount percentage
 const discountPercent = computed(() => {
     if (!hasDiscount.value || !props.product.price) return 0;
     return Math.round(((props.product.price - props.product.final_price) / props.product.price) * 100);
 });
 
-// Product tag (badge)
-const productTag = computed(() => {
-    return props.product.tag || null;
-});
-
-// In stock
-const inStock = computed(() => {
-    return props.product.in_stock !== false;
-});
+const productTag = computed(() => props.product.tag || null);
+const inStock = computed(() => props.product.in_stock !== false);
 
 const page = usePage();
 
-// Add to cart
 const addToCart = async () => {
     try {
         const response = await axios.post('/cart/add', {
@@ -67,27 +50,20 @@ const addToCart = async () => {
         });
 
         if (response.data.success && response.data.cart) {
-            // Update shared cart state
             page.props.cart = response.data.cart;
         }
-    } catch (error) {
-        console.error('Error adding to cart:', error);
+    } catch {
+        // silent
     }
 };
 
-// Product URL
-const productUrl = computed(() => {
-    return `/product/${props.product.slug || props.product.id}`;
-});
-
-// Rating (if available)
+const productUrl = computed(() => `/product/${props.product.slug || props.product.id}`);
 const rating = computed(() => props.product.average_rating || 0);
 const reviewCount = computed(() => props.product.reviews_count || 0);
 </script>
 
 <template>
     <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300">
-        <!-- Image Container -->
         <div class="relative aspect-square overflow-hidden bg-gray-100">
             <Link :href="productUrl">
                 <img
@@ -104,17 +80,10 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                 </div>
             </Link>
 
-            <!-- Badges -->
             <div class="absolute top-3 left-3 flex flex-col gap-2">
-                <!-- Discount Badge -->
-                <span
-                    v-if="hasDiscount"
-                    class="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-lg"
-                >
+                <span v-if="hasDiscount" class="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-lg">
                     -{{ discountPercent }}%
                 </span>
-
-                <!-- Custom Tag -->
                 <span
                     v-if="productTag"
                     class="px-2 py-1 text-xs font-bold text-white rounded-lg"
@@ -122,36 +91,28 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                 >
                     {{ productTag }}
                 </span>
-
-                <!-- Out of Stock -->
-                <span
-                    v-if="!inStock"
-                    class="px-2 py-1 text-xs font-bold text-white bg-gray-500 rounded-lg"
-                >
-                    Изчерпан
+                <span v-if="!inStock" class="px-2 py-1 text-xs font-bold text-white bg-gray-500 rounded-lg">
+                    {{ t('product.out_of_stock') }}
                 </span>
             </div>
 
-            <!-- Action Buttons -->
             <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <!-- Wishlist -->
                 <button
                     v-if="showWishlist"
                     @click.prevent="$emit('add-to-wishlist', product)"
                     class="w-9 h-9 bg-white rounded-lg shadow-md flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-red-50 transition-colors"
-                    title="Добави в любими"
+                    :title="t('product.add_to_wishlist')"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 </button>
 
-                <!-- Quick View -->
                 <button
                     v-if="showQuickView"
                     @click.prevent="$emit('quick-view', product)"
                     class="w-9 h-9 bg-white rounded-lg shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 transition-colors"
-                    title="Бърз преглед"
+                    :title="t('product.quick_view')"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -159,12 +120,11 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                     </svg>
                 </button>
 
-                <!-- Compare -->
                 <button
                     v-if="showCompare"
                     @click.prevent="$emit('add-to-compare', product)"
                     class="w-9 h-9 bg-white rounded-lg shadow-md flex items-center justify-center text-gray-600 hover:text-green-500 hover:bg-green-50 transition-colors"
-                    title="Сравни"
+                    :title="t('product.compare')"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -173,21 +133,17 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
             </div>
         </div>
 
-        <!-- Content -->
         <div class="p-4">
-            <!-- Category -->
             <p v-if="product.category?.name" class="text-xs text-gray-500 mb-1">
                 {{ product.category.name }}
             </p>
 
-            <!-- Name -->
             <Link :href="productUrl">
                 <h3 class="font-medium text-gray-900 hover:text-indigo-600 line-clamp-2 min-h-[2.5rem] transition-colors">
                     {{ product.name }}
                 </h3>
             </Link>
 
-            <!-- Rating -->
             <div v-if="rating > 0" class="flex items-center gap-1 mt-2">
                 <div class="flex">
                     <svg
@@ -204,7 +160,6 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                 <span class="text-xs text-gray-500">({{ reviewCount }})</span>
             </div>
 
-            <!-- Price -->
             <div class="mt-3 flex items-center gap-2">
                 <span class="text-lg font-bold" :style="{ color: primaryColor }">
                     {{ formatPrice(product.final_price) }}
@@ -214,7 +169,6 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                 </span>
             </div>
 
-            <!-- Add to Cart Button -->
             <button
                 @click="addToCart"
                 :disabled="!inStock"
@@ -225,9 +179,9 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Добави в количката
+                    {{ t('product.add_to_cart') }}
                 </span>
-                <span v-else>Изчерпан</span>
+                <span v-else>{{ t('product.out_of_stock') }}</span>
             </button>
         </div>
     </div>

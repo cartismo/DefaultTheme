@@ -1,25 +1,24 @@
 <script setup>
 import { computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
     order: Object,
 });
 
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
+const page = usePage();
+const store = computed(() => page.props.store || {});
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
-
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
 </script>
 
 <template>
-    <StorefrontLayout title="Успешна поръчка">
+    <StorefrontLayout :title="t('checkout_success.title')">
         <div class="bg-gray-50 min-h-screen py-12">
             <div class="max-w-2xl mx-auto px-4">
                 <!-- Success Card -->
@@ -31,26 +30,26 @@ const formatPrice = (price) => {
                         </svg>
                     </div>
 
-                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Благодарим за поръчката!</h1>
-                    <p class="text-gray-600 mb-6">Вашата поръчка беше приета успешно. Ще получите имейл с потвърждение.</p>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t('checkout_success.thank_you') }}</h1>
+                    <p class="text-gray-600 mb-6">{{ t('checkout_success.order_accepted') }}</p>
 
                     <!-- Order Info -->
                     <div class="bg-gray-50 rounded-xl p-6 text-left mb-6">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <p class="text-sm text-gray-500">Номер на поръчка</p>
+                                <p class="text-sm text-gray-500">{{ t('checkout_success.order_number') }}</p>
                                 <p class="font-semibold text-gray-900">{{ order.invoice_no }}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500">Дата</p>
+                                <p class="text-sm text-gray-500">{{ t('checkout_success.date') }}</p>
                                 <p class="font-semibold text-gray-900">{{ order.created_at }}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500">Метод на доставка</p>
+                                <p class="text-sm text-gray-500">{{ t('checkout_success.shipping_method') }}</p>
                                 <p class="font-semibold text-gray-900">{{ order.shipping_method }}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-500">Метод на плащане</p>
+                                <p class="text-sm text-gray-500">{{ t('checkout_success.payment_method') }}</p>
                                 <p class="font-semibold text-gray-900">{{ order.payment_method }}</p>
                             </div>
                         </div>
@@ -58,14 +57,14 @@ const formatPrice = (price) => {
                         <hr class="my-4">
 
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600">Общо:</span>
+                            <span class="text-gray-600">{{ t('checkout_success.total') }}</span>
                             <span class="text-xl font-bold" :style="{ color: primaryColor }">{{ formatPrice(order.total) }}</span>
                         </div>
                     </div>
 
                     <!-- Shipping Address -->
                     <div class="bg-gray-50 rounded-xl p-6 text-left mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-2">Адрес за доставка</h3>
+                        <h3 class="font-semibold text-gray-900 mb-2">{{ t('checkout_success.shipping_address') }}</h3>
                         <p class="text-gray-600">{{ order.shipping_address.name }}</p>
                         <p class="text-gray-600">{{ order.shipping_address.address }}</p>
                         <p class="text-gray-600">{{ order.shipping_address.city }}, {{ order.shipping_address.postcode }}</p>
@@ -78,26 +77,26 @@ const formatPrice = (price) => {
                             href="/account/orders"
                             class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
                         >
-                            Виж поръчките
+                            {{ t('checkout_success.view_orders') }}
                         </Link>
                         <Link
                             href="/products"
                             class="px-6 py-3 text-white rounded-xl font-medium transition-colors"
                             :style="{ backgroundColor: primaryColor }"
                         >
-                            Продължи пазаруването
+                            {{ t('checkout_success.continue_shopping') }}
                         </Link>
                     </div>
                 </div>
 
                 <!-- Help Section -->
-                <div class="mt-8 text-center text-gray-600">
-                    <p class="mb-2">Имате въпроси относно поръчката?</p>
+                <div v-if="store.phone || store.email" class="mt-8 text-center text-gray-600">
+                    <p class="mb-2">{{ t('checkout_success.need_help') }}</p>
                     <p>
-                        Свържете се с нас на
-                        <a href="tel:+359888123456" class="font-medium" :style="{ color: primaryColor }">+359 888 123 456</a>
-                        или
-                        <a href="mailto:support@store.com" class="font-medium" :style="{ color: primaryColor }">support@store.com</a>
+                        {{ t('checkout_success.contact_us') }}
+                        <a v-if="store.phone" :href="'tel:' + store.phone" class="font-medium" :style="{ color: primaryColor }">{{ store.phone }}</a>
+                        <template v-if="store.phone && store.email"> {{ t('checkout_success.or') }} </template>
+                        <a v-if="store.email" :href="'mailto:' + store.email" class="font-medium" :style="{ color: primaryColor }">{{ store.email }}</a>
                     </p>
                 </div>
             </div>

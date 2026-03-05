@@ -2,11 +2,13 @@
 import { computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
 const props = defineProps({
     settings: Object,
 });
 
+const { t } = useThemeTranslations();
 const page = usePage();
 const status = computed(() => page.props.flash?.success);
 
@@ -27,8 +29,8 @@ const submit = () => {
 </script>
 
 <template>
-    <StorefrontLayout title="Вход">
-        <Head title="Вход" />
+    <StorefrontLayout :title="t('auth.login')">
+        <Head :title="t('auth.login')" />
 
         <div class="min-h-[70vh] flex items-center justify-center py-12 px-4">
             <div class="w-full max-w-md">
@@ -36,8 +38,8 @@ const submit = () => {
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                     <!-- Header -->
                     <div class="px-8 pt-8 pb-6 text-center border-b border-gray-100">
-                        <h1 class="text-2xl font-bold text-gray-900">Добре дошли отново</h1>
-                        <p class="mt-2 text-gray-600">Влезте в акаунта си</p>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.login_title') }}</h1>
+                        <p class="mt-2 text-gray-600">{{ t('auth.login_subtitle') }}</p>
                     </div>
 
                     <!-- Form -->
@@ -51,7 +53,7 @@ const submit = () => {
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Имейл адрес
+                                    {{ t('auth.email') }}
                                 </label>
                                 <input
                                     id="email"
@@ -74,14 +76,14 @@ const submit = () => {
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
                                     <label for="password" class="block text-sm font-medium text-gray-700">
-                                        Парола
+                                        {{ t('auth.password') }}
                                     </label>
                                     <Link
                                         href="/forgot-password"
                                         class="text-sm font-medium hover:underline"
                                         :style="{ color: primaryColor }"
                                     >
-                                        Забравена парола?
+                                        {{ t('auth.forgot_password') }}
                                     </Link>
                                 </div>
                                 <input
@@ -110,7 +112,7 @@ const submit = () => {
                                     :style="{ color: primaryColor, '--tw-ring-color': primaryColor }"
                                 />
                                 <label for="remember" class="ml-2 text-sm text-gray-600">
-                                    Запомни ме
+                                    {{ t('auth.remember_me') }}
                                 </label>
                             </div>
 
@@ -130,7 +132,7 @@ const submit = () => {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                {{ form.processing ? 'Влизане...' : 'Вход' }}
+                                {{ form.processing ? t('auth.logging_in') : t('auth.login') }}
                             </button>
                         </form>
                     </div>
@@ -138,13 +140,13 @@ const submit = () => {
                     <!-- Footer -->
                     <div class="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
                         <p class="text-sm text-gray-600">
-                            Нямате акаунт?
+                            {{ t('auth.no_account') }}
                             <Link
                                 href="/register"
                                 class="font-semibold hover:underline"
                                 :style="{ color: primaryColor }"
                             >
-                                Регистрирайте се
+                                {{ t('auth.sign_up') }}
                             </Link>
                         </p>
                     </div>

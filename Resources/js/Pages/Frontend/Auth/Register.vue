@@ -2,10 +2,13 @@
 import { computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
 const props = defineProps({
     settings: Object,
 });
+
+const { t } = useThemeTranslations();
 
 // Theme colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
@@ -29,8 +32,8 @@ const submit = () => {
 </script>
 
 <template>
-    <StorefrontLayout title="Регистрация">
-        <Head title="Регистрация" />
+    <StorefrontLayout :title="t('auth.register')">
+        <Head :title="t('auth.register')" />
 
         <div class="min-h-[70vh] flex items-center justify-center py-12 px-4">
             <div class="w-full max-w-lg">
@@ -38,8 +41,8 @@ const submit = () => {
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                     <!-- Header -->
                     <div class="px-8 pt-8 pb-6 text-center border-b border-gray-100">
-                        <h1 class="text-2xl font-bold text-gray-900">Създайте акаунт</h1>
-                        <p class="mt-2 text-gray-600">Регистрирайте се за да пазарувате по-лесно</p>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.register_title') }}</h1>
+                        <p class="mt-2 text-gray-600">{{ t('auth.register_subtitle') }}</p>
                     </div>
 
                     <!-- Form -->
@@ -50,7 +53,7 @@ const submit = () => {
                                 <!-- First Name -->
                                 <div>
                                     <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Име <span class="text-red-500">*</span>
+                                        {{ t('auth.first_name') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         id="first_name"
@@ -58,7 +61,7 @@ const submit = () => {
                                         type="text"
                                         required
                                         autofocus
-                                        placeholder="Иван"
+                                        :placeholder="t('auth.first_name_placeholder')"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                                         :class="form.errors.first_name ? 'border-red-500' : ''"
                                         :style="{ '--tw-ring-color': primaryColor }"
@@ -71,14 +74,14 @@ const submit = () => {
                                 <!-- Last Name -->
                                 <div>
                                     <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Фамилия <span class="text-red-500">*</span>
+                                        {{ t('auth.last_name') }} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         id="last_name"
                                         v-model="form.last_name"
                                         type="text"
                                         required
-                                        placeholder="Иванов"
+                                        :placeholder="t('auth.last_name_placeholder')"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                                         :class="form.errors.last_name ? 'border-red-500' : ''"
                                         :style="{ '--tw-ring-color': primaryColor }"
@@ -92,7 +95,7 @@ const submit = () => {
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Имейл адрес <span class="text-red-500">*</span>
+                                    {{ t('auth.email') }} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="email"
@@ -113,14 +116,14 @@ const submit = () => {
                             <!-- Phone -->
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Телефон
+                                    {{ t('auth.phone') }}
                                 </label>
                                 <input
                                     id="phone"
                                     v-model="form.phone"
                                     type="tel"
                                     autocomplete="tel"
-                                    placeholder="+359 888 123 456"
+                                    :placeholder="t('contact.phone_placeholder')"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                                     :class="form.errors.phone ? 'border-red-500' : ''"
                                     :style="{ '--tw-ring-color': primaryColor }"
@@ -133,7 +136,7 @@ const submit = () => {
                             <!-- Password -->
                             <div>
                                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Парола <span class="text-red-500">*</span>
+                                    {{ t('auth.password') }} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="password"
@@ -141,7 +144,7 @@ const submit = () => {
                                     type="password"
                                     required
                                     autocomplete="new-password"
-                                    placeholder="Минимум 8 символа"
+                                    :placeholder="t('auth.min_password')"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                                     :class="form.errors.password ? 'border-red-500' : ''"
                                     :style="{ '--tw-ring-color': primaryColor }"
@@ -154,7 +157,7 @@ const submit = () => {
                             <!-- Password Confirmation -->
                             <div>
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Потвърдете паролата <span class="text-red-500">*</span>
+                                    {{ t('auth.password_confirm') }} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="password_confirmation"
@@ -162,7 +165,7 @@ const submit = () => {
                                     type="password"
                                     required
                                     autocomplete="new-password"
-                                    placeholder="Повторете паролата"
+                                    :placeholder="t('auth.repeat_password')"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                                     :style="{ '--tw-ring-color': primaryColor }"
                                 />
@@ -178,7 +181,7 @@ const submit = () => {
                                     :style="{ color: primaryColor, '--tw-ring-color': primaryColor }"
                                 />
                                 <label for="newsletter" class="ml-2 text-sm text-gray-600">
-                                    Искам да получавам новини и промоции по имейл
+                                    {{ t('auth.newsletter_subscribe') }}
                                 </label>
                             </div>
 
@@ -194,10 +197,10 @@ const submit = () => {
                                     :style="{ color: primaryColor, '--tw-ring-color': primaryColor }"
                                 />
                                 <label for="terms" class="ml-2 text-sm text-gray-600">
-                                    Съгласен съм с
-                                    <a href="/page/terms" class="underline hover:no-underline" :style="{ color: primaryColor }">Общите условия</a>
-                                    и
-                                    <a href="/page/privacy" class="underline hover:no-underline" :style="{ color: primaryColor }">Политиката за поверителност</a>
+                                    {{ t('auth.agree_terms') }}
+                                    <a href="/page/terms" class="underline hover:no-underline" :style="{ color: primaryColor }">{{ t('auth.terms') }}</a>
+                                    {{ t('auth.and') }}
+                                    <a href="/page/privacy" class="underline hover:no-underline" :style="{ color: primaryColor }">{{ t('auth.privacy') }}</a>
                                     <span class="text-red-500">*</span>
                                 </label>
                             </div>
@@ -221,7 +224,7 @@ const submit = () => {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                {{ form.processing ? 'Регистрация...' : 'Регистрация' }}
+                                {{ form.processing ? t('auth.registering') : t('auth.register') }}
                             </button>
                         </form>
                     </div>
@@ -229,13 +232,13 @@ const submit = () => {
                     <!-- Footer -->
                     <div class="px-8 py-6 bg-gray-50 border-t border-gray-100 text-center">
                         <p class="text-sm text-gray-600">
-                            Вече имате акаунт?
+                            {{ t('auth.has_account') }}
                             <Link
                                 href="/login"
                                 class="font-semibold hover:underline"
                                 :style="{ color: primaryColor }"
                             >
-                                Влезте тук
+                                {{ t('auth.sign_in') }}
                             </Link>
                         </p>
                     </div>

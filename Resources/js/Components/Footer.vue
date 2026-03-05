@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
+import { useThemeTranslations } from '../Composables/useThemeTranslations';
 
 const props = defineProps({
     settings: Object,
@@ -8,12 +9,13 @@ const props = defineProps({
     menus: Object,
 });
 
+const { t } = useThemeTranslations();
+
 // Footer settings
 const footerSettings = computed(() => props.settings?.footer || {});
 const showNewsletter = computed(() => footerSettings.value.show_newsletter !== false);
 const showSocialLinks = computed(() => footerSettings.value.show_social_links !== false);
 const showPaymentIcons = computed(() => footerSettings.value.show_payment_icons !== false);
-const columns = computed(() => footerSettings.value.columns || 4);
 
 // Colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
@@ -44,17 +46,7 @@ const submitNewsletter = () => {
 const currentYear = new Date().getFullYear();
 
 // Social links (from store settings or default)
-const socialLinks = computed(() => {
-    return props.store?.social_links || {
-        facebook: '#',
-        instagram: '#',
-        twitter: '#',
-        youtube: '#',
-    };
-});
-
-// Payment methods
-const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
+const socialLinks = computed(() => props.store?.social_links || {});
 </script>
 
 <template>
@@ -63,11 +55,11 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
         <div v-if="showNewsletter" class="border-b border-gray-800">
             <div class="max-w-7xl mx-auto px-4 py-12">
                 <div class="max-w-2xl mx-auto text-center">
-                    <h3 class="text-2xl font-bold mb-2">Абонирай се за новини</h3>
-                    <p class="text-gray-400 mb-6">Получавай първи информация за нови продукти и специални оферти</p>
+                    <h3 class="text-2xl font-bold mb-2">{{ t('footer.newsletter_title') }}</h3>
+                    <p class="text-gray-400 mb-6">{{ t('footer.newsletter_text') }}</p>
 
                     <div v-if="newsletterSubmitted" class="bg-green-500/20 border border-green-500 rounded-xl p-4 text-green-400">
-                        Благодарим! Успешно се абонирахте за нашия бюлетин.
+                        {{ t('footer.newsletter_success') }}
                     </div>
 
                     <form v-else @submit.prevent="submitNewsletter" class="flex flex-col sm:flex-row gap-3">
@@ -75,7 +67,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                             v-model="newsletterForm.email"
                             type="email"
                             required
-                            placeholder="Въведете вашия имейл"
+                            :placeholder="t('footer.newsletter_placeholder')"
                             class="flex-1 px-5 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         />
                         <button
@@ -84,7 +76,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                             class="px-8 py-3 font-semibold text-white rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
                             :style="{ backgroundColor: primaryColor }"
                         >
-                            {{ newsletterForm.processing ? 'Изпращане...' : 'Абонирай се' }}
+                            {{ newsletterForm.processing ? t('footer.newsletter_sending') : t('footer.newsletter_button') }}
                         </button>
                     </form>
                 </div>
@@ -102,7 +94,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                         </span>
                     </Link>
                     <p class="text-gray-400 text-sm mb-4">
-                        {{ store?.description || 'Вашият надежден онлайн магазин за качествени продукти.' }}
+                        {{ store?.description || t('footer.default_description') }}
                     </p>
 
                     <!-- Contact Info -->
@@ -131,7 +123,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
 
                 <!-- Menu Column 1 -->
                 <div>
-                    <h4 class="font-semibold text-white mb-4">{{ footerMenu1?.name || 'Информация' }}</h4>
+                    <h4 class="font-semibold text-white mb-4">{{ footerMenu1?.name || t('footer.info') }}</h4>
                     <ul class="space-y-2">
                         <template v-if="footerMenu1?.items?.length">
                             <li v-for="item in footerMenu1.items" :key="item.id">
@@ -141,17 +133,17 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                             </li>
                         </template>
                         <template v-else>
-                            <li><Link href="/about" class="text-gray-400 hover:text-white text-sm transition-colors">За нас</Link></li>
-                            <li><Link href="/contact" class="text-gray-400 hover:text-white text-sm transition-colors">Контакти</Link></li>
-                            <li><Link href="/blog" class="text-gray-400 hover:text-white text-sm transition-colors">Блог</Link></li>
-                            <li><Link href="/careers" class="text-gray-400 hover:text-white text-sm transition-colors">Кариери</Link></li>
+                            <li><Link href="/about" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.about') }}</Link></li>
+                            <li><Link href="/contact" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('contact') }}</Link></li>
+                            <li><Link href="/blog" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('blog') }}</Link></li>
+                            <li><Link href="/careers" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.careers') }}</Link></li>
                         </template>
                     </ul>
                 </div>
 
                 <!-- Menu Column 2 -->
                 <div>
-                    <h4 class="font-semibold text-white mb-4">{{ footerMenu2?.name || 'Обслужване' }}</h4>
+                    <h4 class="font-semibold text-white mb-4">{{ footerMenu2?.name || t('footer.service') }}</h4>
                     <ul class="space-y-2">
                         <template v-if="footerMenu2?.items?.length">
                             <li v-for="item in footerMenu2.items" :key="item.id">
@@ -161,17 +153,17 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                             </li>
                         </template>
                         <template v-else>
-                            <li><Link href="/shipping" class="text-gray-400 hover:text-white text-sm transition-colors">Доставка</Link></li>
-                            <li><Link href="/returns" class="text-gray-400 hover:text-white text-sm transition-colors">Връщане</Link></li>
-                            <li><Link href="/faq" class="text-gray-400 hover:text-white text-sm transition-colors">Често задавани въпроси</Link></li>
-                            <li><Link href="/track-order" class="text-gray-400 hover:text-white text-sm transition-colors">Проследяване</Link></li>
+                            <li><Link href="/shipping" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.shipping') }}</Link></li>
+                            <li><Link href="/returns" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.returns') }}</Link></li>
+                            <li><Link href="/faq" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.faq') }}</Link></li>
+                            <li><Link href="/track-order" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.tracking') }}</Link></li>
                         </template>
                     </ul>
                 </div>
 
                 <!-- Menu Column 3 -->
                 <div>
-                    <h4 class="font-semibold text-white mb-4">{{ footerMenu3?.name || 'Акаунт' }}</h4>
+                    <h4 class="font-semibold text-white mb-4">{{ footerMenu3?.name || t('footer.account_section') }}</h4>
                     <ul class="space-y-2">
                         <template v-if="footerMenu3?.items?.length">
                             <li v-for="item in footerMenu3.items" :key="item.id">
@@ -181,10 +173,10 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                             </li>
                         </template>
                         <template v-else>
-                            <li><Link href="/account" class="text-gray-400 hover:text-white text-sm transition-colors">Моят акаунт</Link></li>
-                            <li><Link href="/account/orders" class="text-gray-400 hover:text-white text-sm transition-colors">История поръчки</Link></li>
-                            <li><Link href="/wishlist" class="text-gray-400 hover:text-white text-sm transition-colors">Любими</Link></li>
-                            <li><Link href="/compare" class="text-gray-400 hover:text-white text-sm transition-colors">Сравнение</Link></li>
+                            <li><Link href="/account" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.my_account') }}</Link></li>
+                            <li><Link href="/account/orders" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.order_history') }}</Link></li>
+                            <li><Link href="/wishlist" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.wishlist') }}</Link></li>
+                            <li><Link href="/compare" class="text-gray-400 hover:text-white text-sm transition-colors">{{ t('footer.compare') }}</Link></li>
                         </template>
                     </ul>
                 </div>
@@ -192,14 +184,14 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                 <!-- Social & Payment Column -->
                 <div>
                     <!-- Social Links -->
-                    <div v-if="showSocialLinks" class="mb-6">
-                        <h4 class="font-semibold text-white mb-4">Последвай ни</h4>
+                    <div v-if="showSocialLinks && Object.keys(socialLinks).length" class="mb-6">
+                        <h4 class="font-semibold text-white mb-4">{{ t('footer.follow_us') }}</h4>
                         <div class="flex space-x-3">
                             <a
                                 v-if="socialLinks.facebook"
                                 :href="socialLinks.facebook"
                                 target="_blank"
-                                rel="noopener"
+                                rel="noopener noreferrer"
                                 class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all"
                             >
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -210,7 +202,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                                 v-if="socialLinks.instagram"
                                 :href="socialLinks.instagram"
                                 target="_blank"
-                                rel="noopener"
+                                rel="noopener noreferrer"
                                 class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500 hover:text-white transition-all"
                             >
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -221,7 +213,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                                 v-if="socialLinks.twitter"
                                 :href="socialLinks.twitter"
                                 target="_blank"
-                                rel="noopener"
+                                rel="noopener noreferrer"
                                 class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-sky-500 hover:text-white transition-all"
                             >
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -232,7 +224,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
                                 v-if="socialLinks.youtube"
                                 :href="socialLinks.youtube"
                                 target="_blank"
-                                rel="noopener"
+                                rel="noopener noreferrer"
                                 class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-red-600 hover:text-white transition-all"
                             >
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -244,7 +236,7 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
 
                     <!-- Payment Icons -->
                     <div v-if="showPaymentIcons">
-                        <h4 class="font-semibold text-white mb-4">Начини на плащане</h4>
+                        <h4 class="font-semibold text-white mb-4">{{ t('footer.payment_methods') }}</h4>
                         <div class="flex flex-wrap gap-2">
                             <div class="bg-white rounded px-3 py-1.5">
                                 <span class="text-xs font-bold text-blue-600">VISA</span>
@@ -268,11 +260,11 @@ const paymentMethods = ['visa', 'mastercard', 'amex', 'paypal'];
         <div class="border-t border-gray-800">
             <div class="max-w-7xl mx-auto px-4 py-6">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-                    <p>&copy; {{ currentYear }} {{ store?.name || 'Cartismo' }}. Всички права запазени.</p>
+                    <p>&copy; {{ currentYear }} {{ store?.name || 'Cartismo' }}. {{ t('footer.all_rights') }}</p>
                     <div class="flex items-center space-x-4">
-                        <Link href="/privacy" class="hover:text-white transition-colors">Поверителност</Link>
-                        <Link href="/terms" class="hover:text-white transition-colors">Условия</Link>
-                        <Link href="/cookies" class="hover:text-white transition-colors">Бисквитки</Link>
+                        <Link href="/privacy" class="hover:text-white transition-colors">{{ t('footer.privacy') }}</Link>
+                        <Link href="/terms" class="hover:text-white transition-colors">{{ t('footer.terms') }}</Link>
+                        <Link href="/cookies" class="hover:text-white transition-colors">{{ t('footer.cookies') }}</Link>
                     </div>
                 </div>
             </div>

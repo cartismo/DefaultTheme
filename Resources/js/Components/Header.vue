@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { useLocale } from '@/Composables/useLocale';
 import { useCurrency } from '@/Composables/useCurrency';
+import { useThemeTranslations } from '../Composables/useThemeTranslations';
 import debounce from 'lodash/debounce';
 import 'flag-icons/css/flag-icons.min.css';
 
@@ -35,7 +36,10 @@ const {
     currenciesList,
     switchCurrency,
     getCurrencySymbol,
+    formatPrice,
 } = useCurrency();
+
+const { t } = useThemeTranslations();
 
 // Colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
@@ -140,14 +144,6 @@ const closeNotificationModal = () => {
     selectedNotification.value = null;
 };
 
-// Format price for search results
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
 // Debounced search
 const performSearch = debounce(async () => {
     if (searchQuery.value.length < 2) {
@@ -190,7 +186,7 @@ const cartCount = computed(() => pageCart.value.totals?.items_count || 0);
 
 // Current language data
 const currentLanguage = computed(() => {
-    return languages.value.find(l => l.code === currentLocale.value) || { name: 'Bulgarian', native_name: 'Български', code: 'bg', flag: 'bg' };
+    return languages.value.find(l => l.code === currentLocale.value) || { name: 'English', native_name: 'English', code: 'en', flag: 'gb' };
 });
 
 // Current currency data
@@ -396,7 +392,7 @@ onUnmounted(() => {
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Търсене на продукти..."
+                                :placeholder="t('header.search_placeholder')"
                                 class="w-full pl-4 pr-12 py-3 bg-gray-100 border-0 rounded-full focus:bg-white focus:ring-2 focus:outline-none transition-all"
                                 :style="{ '--tw-ring-color': primaryColor }"
                                 @focus="searchQuery.length >= 2 && (showSearchDropdown = true)"
@@ -469,14 +465,14 @@ onUnmounted(() => {
                                             class="w-full text-center font-medium hover:opacity-80 transition-opacity"
                                             :style="{ color: primaryColor }"
                                         >
-                                            Виж всички резултати за "{{ searchQuery }}"
+                                            {{ t('search.see_all_results', { query: searchQuery }) }}
                                         </button>
                                     </div>
                                 </div>
 
                                 <!-- No Results -->
                                 <div v-else class="py-6 text-center text-gray-500">
-                                    Няма намерени продукти за "{{ searchQuery }}"
+                                    {{ t('search.no_results', { query: searchQuery }) }}
                                 </div>
                             </div>
                         </transition>
@@ -526,7 +522,7 @@ onUnmounted(() => {
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span class="hidden md:inline ml-1 text-sm">Вход</span>
+                                <span class="hidden md:inline ml-1 text-sm">{{ t('header.login') }}</span>
                             </Link>
 
                             <!-- User Dropdown -->
@@ -550,33 +546,33 @@ onUnmounted(() => {
                                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                         </svg>
-                                        Табло
+                                        {{ t('account.dashboard') }}
                                     </Link>
                                     <Link href="/account/orders" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
                                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
-                                        Поръчки
+                                        {{ t('account.orders') }}
                                     </Link>
                                     <Link href="/wishlist" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
                                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                        Любими
+                                        {{ t('footer.wishlist') }}
                                     </Link>
                                     <Link href="/account/profile" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
                                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        Настройки
+                                        {{ t('account.profile') }}
                                     </Link>
                                     <hr class="my-2 border-gray-100">
                                     <Link href="/logout" method="post" as="button" class="w-full flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50">
                                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                         </svg>
-                                        Изход
+                                        {{ t('auth.logout') }}
                                     </Link>
                                 </div>
                             </transition>
@@ -614,14 +610,14 @@ onUnmounted(() => {
                                     class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50"
                                 >
                                     <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                                        <h3 class="font-semibold text-gray-900">Известия</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('header.notifications') }}</h3>
                                         <button
                                             v-if="unreadCount > 0"
                                             @click="markAllAsRead"
                                             class="text-xs hover:underline"
                                             :style="{ color: primaryColor }"
                                         >
-                                            Маркирай всички като прочетени
+                                            {{ t('header.mark_all_read') }}
                                         </button>
                                     </div>
 
@@ -630,7 +626,7 @@ onUnmounted(() => {
                                             <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                             </svg>
-                                            <p>Няма известия</p>
+                                            <p>{{ t('header.no_notifications') }}</p>
                                         </div>
 
                                         <button
@@ -684,7 +680,7 @@ onUnmounted(() => {
                             >
                                 {{ cartCount > 99 ? '99+' : cartCount }}
                             </span>
-                            <span class="hidden md:inline ml-1 text-sm font-medium">Количка</span>
+                            <span class="hidden md:inline ml-1 text-sm font-medium">{{ t('header.cart') }}</span>
                         </button>
                     </div>
                 </div>
@@ -704,7 +700,7 @@ onUnmounted(() => {
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
-                            Всички категории
+                            {{ t('header.all_categories') }}
                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -760,7 +756,7 @@ onUnmounted(() => {
                                                             class="text-sm font-medium"
                                                             :style="{ color: primaryColor }"
                                                         >
-                                                            Виж всички &rarr;
+                                                            {{ t('see_all') }} &rarr;
                                                         </Link>
                                                     </li>
                                                 </ul>
@@ -784,10 +780,10 @@ onUnmounted(() => {
 
                     <!-- Quick Links -->
                     <Link href="/products?sale=1" class="px-4 py-2 text-red-600 hover:text-red-700 font-medium rounded-lg hover:bg-red-50 transition-colors text-sm">
-                        Промоции
+                        {{ t('header.promotions') }}
                     </Link>
                     <Link href="/products?featured=1" class="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition-colors text-sm">
-                        Препоръчани
+                        {{ t('header.featured') }}
                     </Link>
                 </div>
             </div>
@@ -858,13 +854,13 @@ onUnmounted(() => {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                Виж детайли
+                                {{ t('see_details') }}
                             </Link>
                             <button
                                 @click="closeNotificationModal"
                                 class="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg font-medium transition-colors"
                             >
-                                Затвори
+                                {{ t('close') }}
                             </button>
                         </div>
                     </div>

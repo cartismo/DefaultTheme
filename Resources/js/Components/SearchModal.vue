@@ -2,30 +2,28 @@
 import { ref, watch, computed, inject } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
+import { useCurrency } from '@/Composables/useCurrency';
+import { useThemeTranslations } from '../Composables/useThemeTranslations';
 
 const props = defineProps({
     show: Boolean,
+    popularSearches: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const emit = defineEmits(['close']);
 
-// Get theme colors
 const primaryColor = inject('primaryColor', computed(() => '#4F46E5'));
+const { formatPrice } = useCurrency();
+const { t } = useThemeTranslations();
 
 const searchQuery = ref('');
 const searchResults = ref([]);
 const isSearching = ref(false);
 const searchInput = ref(null);
 
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
-// Debounced search
 const performSearch = debounce(async () => {
     if (searchQuery.value.length < 2) {
         searchResults.value = [];
@@ -38,20 +36,17 @@ const performSearch = debounce(async () => {
         const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery.value)}`);
         const data = await response.json();
         searchResults.value = data.products || [];
-    } catch (error) {
-        console.error('Search error:', error);
+    } catch {
         searchResults.value = [];
     } finally {
         isSearching.value = false;
     }
 }, 300);
 
-// Watch search query
 watch(searchQuery, () => {
     performSearch();
 });
 
-// Focus input when modal opens
 watch(() => props.show, (show) => {
     if (show) {
         document.body.style.overflow = 'hidden';
@@ -73,7 +68,6 @@ const handleKeydown = (e) => {
     }
 };
 
-// Submit search
 const submitSearch = () => {
     if (searchQuery.value.trim()) {
         router.get('/search', { q: searchQuery.value });
@@ -81,7 +75,6 @@ const submitSearch = () => {
     }
 };
 
-// Click result
 const clickResult = () => {
     emit('close');
 };
@@ -89,7 +82,6 @@ const clickResult = () => {
 
 <template>
     <Teleport to="body">
-        <!-- Backdrop -->
         <transition
             enter-active-class="transition-opacity duration-200"
             enter-from-class="opacity-0"
@@ -105,7 +97,6 @@ const clickResult = () => {
             />
         </transition>
 
-        <!-- Modal -->
         <transition
             enter-active-class="transition-all duration-200"
             enter-from-class="opacity-0 scale-95"
@@ -118,7 +109,6 @@ const clickResult = () => {
                 v-if="show"
                 class="fixed inset-x-4 top-20 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
             >
-                <!-- Search Input -->
                 <form @submit.prevent="submitSearch" class="flex items-center border-b border-gray-200">
                     <svg class="w-5 h-5 ml-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -127,7 +117,7 @@ const clickResult = () => {
                         ref="searchInput"
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Търсене на продукти..."
+                        :placeholder="t('search.placeholder')"
                         class="flex-1 px-4 py-4 text-lg border-none focus:outline-none focus:ring-0"
                     />
                     <button
@@ -149,9 +139,7 @@ const clickResult = () => {
                     </button>
                 </form>
 
-                <!-- Results -->
                 <div class="max-h-96 overflow-y-auto">
-                    <!-- Loading -->
                     <div v-if="isSearching" class="flex items-center justify-center py-8">
                         <svg class="animate-spin h-8 w-8" :style="{ color: primaryColor }" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -159,7 +147,6 @@ const clickResult = () => {
                         </svg>
                     </div>
 
-                    <!-- Results List -->
                     <div v-else-if="searchResults.length > 0" class="py-2">
                         <Link
                             v-for="product in searchResults"
@@ -188,36 +175,32 @@ const clickResult = () => {
                             </div>
                         </Link>
 
-                        <!-- View All Results -->
                         <div class="px-4 py-3 border-t border-gray-100">
                             <button
                                 @click="submitSearch"
                                 class="w-full py-2 text-center font-medium hover:opacity-80 transition-opacity"
                                 :style="{ color: primaryColor }"
                             >
-                                Виж всички резултати за "{{ searchQuery }}"
+                                {{ t('search.see_all_results', { query: searchQuery }) }}
                             </button>
                         </div>
                     </div>
 
-                    <!-- No Results -->
                     <div v-else-if="searchQuery.length >= 2" class="py-12 text-center">
                         <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <p class="text-gray-500">Няма намерени продукти за "{{ searchQuery }}"</p>
+                        <p class="text-gray-500">{{ t('search.no_results', { query: searchQuery }) }}</p>
                     </div>
 
-                    <!-- Initial State -->
                     <div v-else class="py-8 px-4">
-                        <p class="text-sm text-gray-500 text-center">Въведете поне 2 символа за търсене</p>
+                        <p class="text-sm text-gray-500 text-center">{{ t('search.min_chars') }}</p>
 
-                        <!-- Popular Searches -->
-                        <div class="mt-6">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Популярни търсения</p>
+                        <div v-if="popularSearches.length > 0" class="mt-6">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ t('search.popular') }}</p>
                             <div class="flex flex-wrap gap-2">
                                 <button
-                                    v-for="term in ['Телефони', 'Лаптопи', 'Слушалки', 'Часовници']"
+                                    v-for="term in popularSearches"
                                     :key="term"
                                     @click="searchQuery = term"
                                     class="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"

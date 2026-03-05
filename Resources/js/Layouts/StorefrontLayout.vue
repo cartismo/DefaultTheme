@@ -23,9 +23,9 @@ const categories = computed(() => page.props.categories || []);
 const cart = computed(() => page.props.cart || { items: [], total: 0, count: 0 });
 const customer = computed(() => page.props.auth?.customer || null);
 const currencies = computed(() => page.props.currencies || []);
-const currentCurrency = computed(() => page.props.currentCurrency || { code: 'BGN', symbol: 'лв.' });
+const currentCurrency = computed(() => page.props.currentCurrency || { code: 'EUR', symbol: '€' });
 const languages = computed(() => page.props.languages || []);
-const currentLanguage = computed(() => page.props.currentLanguage || { code: 'bg', name: 'Български' });
+const currentLanguage = computed(() => page.props.currentLanguage || { code: 'en', name: 'English' });
 const menus = computed(() => page.props.menus || {});
 
 // UI State

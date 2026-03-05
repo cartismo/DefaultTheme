@@ -4,6 +4,8 @@ import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../../Components/ProductCard.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
@@ -11,6 +13,9 @@ const props = defineProps({
     relatedProducts: Array,
     breadcrumb: Array,
 });
+
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
 
 // Colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
@@ -75,14 +80,6 @@ const totalPrice = computed(() => {
     return price * quantity.value;
 });
 
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
 const page = usePage();
 
 // Add to cart
@@ -95,11 +92,10 @@ const addToCart = async () => {
         });
 
         if (response.data.success && response.data.cart) {
-            // Update shared cart state
             page.props.cart = response.data.cart;
         }
     } catch (error) {
-        console.error('Error adding to cart:', error);
+        // silent
     }
 };
 
@@ -110,7 +106,7 @@ const addToWishlist = async () => {
             product_id: props.product.id,
         });
     } catch (error) {
-        console.error('Error adding to wishlist:', error);
+        // silent
     }
 };
 
@@ -128,9 +124,9 @@ const showZoom = ref(false);
             <div class="bg-white border-b border-gray-200">
                 <div class="max-w-7xl mx-auto px-4 py-4">
                     <nav class="flex items-center space-x-2 text-sm text-gray-500">
-                        <Link href="/" class="hover:text-gray-700">Начало</Link>
+                        <Link href="/" class="hover:text-gray-700">{{ t('home') }}</Link>
                         <span>/</span>
-                        <Link href="/products" class="hover:text-gray-700">Продукти</Link>
+                        <Link href="/products" class="hover:text-gray-700">{{ t('products') }}</Link>
                         <template v-for="item in breadcrumb" :key="item.id">
                             <span>/</span>
                             <Link :href="`/category/${item.slug}`" class="hover:text-gray-700">
@@ -223,7 +219,7 @@ const showZoom = ref(false);
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     </div>
-                                    <span class="text-sm text-gray-600">({{ product.reviews_count }} отзива)</span>
+                                    <span class="text-sm text-gray-600">({{ t('product.reviews', { count: product.reviews_count }) }})</span>
                                 </div>
                             </div>
 
@@ -246,7 +242,7 @@ const showZoom = ref(false);
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    На склад
+                                    {{ t('product.in_stock') }}
                                 </span>
                                 <span
                                     v-else
@@ -255,7 +251,7 @@ const showZoom = ref(false);
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                    {{ product.stock_status?.name || 'Изчерпан' }}
+                                    {{ product.stock_status?.name || t('product.out_of_stock') }}
                                 </span>
                             </div>
 
@@ -363,17 +359,17 @@ const showZoom = ref(false);
                             <!-- Product Meta -->
                             <div class="pt-6 border-t border-gray-200 space-y-2 text-sm">
                                 <div v-if="product.sku" class="flex">
-                                    <span class="w-24 text-gray-500">SKU:</span>
+                                    <span class="w-24 text-gray-500">{{ t('product.sku') }}</span>
                                     <span class="text-gray-900 font-mono">{{ product.sku }}</span>
                                 </div>
                                 <div v-if="product.category">
-                                    <span class="w-24 text-gray-500">Категория:</span>
+                                    <span class="w-24 text-gray-500">{{ t('product.category') }}</span>
                                     <Link :href="`/category/${product.category.slug}`" class="text-indigo-600 hover:underline">
                                         {{ product.category.name }}
                                     </Link>
                                 </div>
                                 <div v-if="product.weight">
-                                    <span class="w-24 text-gray-500">Тегло:</span>
+                                    <span class="w-24 text-gray-500">{{ t('product.weight') }}</span>
                                     <span class="text-gray-900">{{ product.weight }}</span>
                                 </div>
                             </div>
@@ -393,7 +389,7 @@ const showZoom = ref(false);
                                     ? 'border-indigo-500 text-indigo-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             >
-                                Описание
+                                {{ t('product.description') }}
                             </button>
                             <button
                                 v-if="product.attributes?.length > 0"
@@ -403,7 +399,7 @@ const showZoom = ref(false);
                                     ? 'border-indigo-500 text-indigo-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             >
-                                Характеристики
+                                {{ t('product.specifications') }}
                             </button>
                             <button
                                 @click="activeTab = 'reviews'"
@@ -412,7 +408,7 @@ const showZoom = ref(false);
                                     ? 'border-indigo-500 text-indigo-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             >
-                                Отзиви ({{ product.reviews_count }})
+                                {{ t('product.reviews_tab', { count: product.reviews_count }) }}
                             </button>
                         </nav>
                     </div>
@@ -422,7 +418,7 @@ const showZoom = ref(false);
                         <!-- Description -->
                         <div v-show="activeTab === 'description'">
                             <div v-if="product.description" class="prose max-w-none" v-html="product.description" />
-                            <p v-else class="text-gray-500">Няма налично описание за този продукт.</p>
+                            <p v-else class="text-gray-500">{{ t('product.no_description') }}</p>
                         </div>
 
                         <!-- Specifications -->
@@ -440,19 +436,19 @@ const showZoom = ref(false);
                                     </table>
                                 </div>
                             </div>
-                            <p v-else class="text-gray-500">Няма налични характеристики.</p>
+                            <p v-else class="text-gray-500">{{ t('product.no_specifications') }}</p>
                         </div>
 
                         <!-- Reviews -->
                         <div v-show="activeTab === 'reviews'">
-                            <p class="text-gray-500">Няма отзиви за този продукт все още.</p>
+                            <p class="text-gray-500">{{ t('product.no_reviews') }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Related Products -->
                 <div v-if="relatedProducts?.length > 0" class="mt-12">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Подобни продукти</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ t('product.related_products') }}</h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                         <ProductCard v-for="relatedProduct in relatedProducts" :key="relatedProduct.id" :product="relatedProduct" />
                     </div>

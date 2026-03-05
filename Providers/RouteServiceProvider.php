@@ -1,34 +1,29 @@
 <?php
 
+/*
+ * Copyright (c) LemonDev Ltd. (ЛемънДев ООД)
+ * Email: info@lemondev.co
+ * https://cartismo.com
+ */
+
 namespace Modules\DefaultTheme\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected string $moduleNamespace = 'Modules\DefaultTheme\Http\Controllers';
-
-    /**
-     * Called before routes are registered.
-     */
     public function boot(): void
     {
         parent::boot();
     }
 
-    /**
-     * Define the routes for the application.
-     */
     public function map(): void
     {
         $this->mapAdminRoutes();
         $this->mapWebRoutes();
     }
 
-    /**
-     * Define the "admin" routes for the module.
-     */
     protected function mapAdminRoutes(): void
     {
         Route::middleware([
@@ -41,9 +36,6 @@ class RouteServiceProvider extends ServiceProvider
             ->group(module_path('DefaultTheme', '/Routes/admin.php'));
     }
 
-    /**
-     * Define the "web" routes for the module (frontend).
-     */
     protected function mapWebRoutes(): void
     {
         Route::middleware('web')

@@ -2,6 +2,8 @@
 import { ref, computed, watch, inject } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useCurrency } from '@/Composables/useCurrency';
+import { useThemeTranslations } from '../Composables/useThemeTranslations';
 
 const props = defineProps({
     show: Boolean,
@@ -9,38 +11,26 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-// Get theme colors
 const primaryColor = inject('primaryColor', computed(() => '#4F46E5'));
+const { formatPrice } = useCurrency();
+const { t } = useThemeTranslations();
 
-// Get cart from page props
 const page = usePage();
 const localCart = ref(page.props.cart || { items: [], totals: {} });
 
-// Watch for page prop changes
 watch(() => page.props.cart, (newCart) => {
     if (newCart) {
         localCart.value = newCart;
     }
 }, { deep: true });
 
-// Computed values
 const items = computed(() => localCart.value.items || []);
 const totals = computed(() => localCart.value.totals || {});
 const count = computed(() => totals.value.items_count || 0);
 
-// Loading states
 const isUpdating = ref({});
 const isRemoving = ref({});
 
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
-// Update quantity
 const updateQuantity = async (cartKey, quantity) => {
     if (quantity < 1) {
         removeItem(cartKey);
@@ -58,14 +48,13 @@ const updateQuantity = async (cartKey, quantity) => {
         if (response.data.success) {
             localCart.value = response.data.cart;
         }
-    } catch (error) {
-        console.error('Error updating cart:', error);
+    } catch {
+        // silent
     } finally {
         isUpdating.value[cartKey] = false;
     }
 };
 
-// Remove item
 const removeItem = async (cartKey) => {
     isRemoving.value[cartKey] = true;
 
@@ -75,14 +64,13 @@ const removeItem = async (cartKey) => {
         if (response.data.success) {
             localCart.value = response.data.cart;
         }
-    } catch (error) {
-        console.error('Error removing item:', error);
+    } catch {
+        // silent
     } finally {
         isRemoving.value[cartKey] = false;
     }
 };
 
-// Close on escape
 watch(() => props.show, (show) => {
     if (show) {
         document.body.style.overflow = 'hidden';
@@ -102,7 +90,6 @@ const handleEscape = (e) => {
 
 <template>
     <Teleport to="body">
-        <!-- Backdrop -->
         <transition
             enter-active-class="transition-opacity duration-300"
             enter-from-class="opacity-0"
@@ -118,7 +105,6 @@ const handleEscape = (e) => {
             />
         </transition>
 
-        <!-- Sidebar -->
         <transition
             enter-active-class="transition-transform duration-300"
             enter-from-class="translate-x-full"
@@ -131,11 +117,10 @@ const handleEscape = (e) => {
                 v-if="show"
                 class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
             >
-                <!-- Header -->
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900">
-                        Количка
-                        <span v-if="count > 0" class="text-gray-500 font-normal">({{ count }} артикула)</span>
+                        {{ t('cart.title') }}
+                        <span v-if="count > 0" class="text-gray-500 font-normal">({{ count }} {{ t('items') }})</span>
                     </h2>
                     <button
                         @click="$emit('close')"
@@ -147,24 +132,21 @@ const handleEscape = (e) => {
                     </button>
                 </div>
 
-                <!-- Cart Items -->
                 <div class="flex-1 overflow-y-auto px-6 py-4">
-                    <!-- Empty Cart -->
                     <div v-if="items.length === 0" class="flex flex-col items-center justify-center h-full text-center">
                         <svg class="w-20 h-20 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <p class="text-gray-500 mb-4">Количката е празна</p>
+                        <p class="text-gray-500 mb-4">{{ t('cart.empty') }}</p>
                         <button
                             @click="$emit('close')"
                             class="px-6 py-2 text-white rounded-lg hover:opacity-90 transition-colors"
                             :style="{ backgroundColor: primaryColor }"
                         >
-                            Продължи пазаруването
+                            {{ t('cart.continue_shopping') }}
                         </button>
                     </div>
 
-                    <!-- Items List -->
                     <div v-else class="space-y-4">
                         <div
                             v-for="item in items"
@@ -172,7 +154,6 @@ const handleEscape = (e) => {
                             class="flex gap-4 p-3 bg-gray-50 rounded-xl"
                             :class="{ 'opacity-50': isRemoving[item.cart_key] }"
                         >
-                            <!-- Product Image -->
                             <Link
                                 :href="`/product/${item.slug}`"
                                 @click="$emit('close')"
@@ -191,7 +172,6 @@ const handleEscape = (e) => {
                                 </div>
                             </Link>
 
-                            <!-- Product Info -->
                             <div class="flex-1 min-w-0">
                                 <Link
                                     :href="`/product/${item.slug}`"
@@ -201,12 +181,10 @@ const handleEscape = (e) => {
                                     {{ item.name }}
                                 </Link>
 
-                                <!-- Options -->
                                 <p v-if="item.options_text" class="text-xs text-gray-500 mt-1">
                                     {{ item.options_text }}
                                 </p>
 
-                                <!-- Price & Quantity -->
                                 <div class="flex items-center justify-between mt-2">
                                     <div class="flex items-center border border-gray-300 rounded-lg">
                                         <button
@@ -233,7 +211,6 @@ const handleEscape = (e) => {
                                 </div>
                             </div>
 
-                            <!-- Remove Button -->
                             <button
                                 @click="removeItem(item.cart_key)"
                                 :disabled="isRemoving[item.cart_key]"
@@ -247,28 +224,25 @@ const handleEscape = (e) => {
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div v-if="items.length > 0" class="border-t border-gray-200 px-6 py-4 space-y-4">
-                    <!-- Totals -->
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-600">Междинна сума</span>
+                            <span class="text-gray-600">{{ t('cart.subtotal') }}</span>
                             <span class="font-medium">{{ formatPrice(totals.subtotal) }}</span>
                         </div>
                         <div class="flex items-center justify-between text-lg font-bold">
-                            <span>Общо</span>
+                            <span>{{ t('cart.total') }}</span>
                             <span :style="{ color: primaryColor }">{{ formatPrice(totals.total) }}</span>
                         </div>
                     </div>
 
-                    <!-- Buttons -->
                     <div class="grid grid-cols-2 gap-3">
                         <Link
                             href="/cart"
                             @click="$emit('close')"
                             class="px-4 py-3 text-center border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
                         >
-                            Виж количката
+                            {{ t('cart.view_cart') }}
                         </Link>
                         <Link
                             href="/checkout"
@@ -276,7 +250,7 @@ const handleEscape = (e) => {
                             class="px-4 py-3 text-center text-white rounded-xl font-medium hover:opacity-90 transition-colors"
                             :style="{ backgroundColor: primaryColor }"
                         >
-                            Поръчай
+                            {{ t('cart.order') }}
                         </Link>
                     </div>
                 </div>

@@ -3,35 +3,32 @@ import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
+import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
     orders: Object,
 });
 
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
 
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
-const menuItems = [
-    { name: 'Табло', href: '/account', icon: 'home' },
-    { name: 'Поръчки', href: '/account/orders', icon: 'shopping-bag', current: true },
-    { name: 'Адреси', href: '/account/addresses', icon: 'location' },
-    { name: 'Профил', href: '/account/profile', icon: 'user' },
-    { name: 'Парола', href: '/account/password', icon: 'lock' },
-];
+const menuItems = computed(() => [
+    { name: t('account.dashboard'), href: '/account' },
+    { name: t('account.orders'), href: '/account/orders', current: true },
+    { name: t('account.addresses'), href: '/account/addresses' },
+    { name: t('account.profile'), href: '/account/profile' },
+    { name: t('account.password'), href: '/account/password' },
+]);
 </script>
 
 <template>
-    <StorefrontLayout title="Моите поръчки">
+    <StorefrontLayout :title="t('account.my_orders')">
         <div class="bg-gray-50 min-h-screen py-8">
             <div class="max-w-7xl mx-auto px-4">
-                <h1 class="text-3xl font-bold text-gray-900 mb-8">Моите поръчки</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ t('account.my_orders') }}</h1>
 
                 <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                     <!-- Sidebar -->
@@ -56,7 +53,7 @@ const menuItems = [
                     <div class="lg:col-span-9 mt-8 lg:mt-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                             <div class="px-6 py-4 border-b border-gray-200">
-                                <h2 class="font-semibold text-gray-900">История на поръчките</h2>
+                                <h2 class="font-semibold text-gray-900">{{ t('account.order_history') }}</h2>
                             </div>
 
                             <div v-if="orders.data?.length > 0">
@@ -65,11 +62,11 @@ const menuItems = [
                                     <table class="w-full">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Поръчка</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Дата</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Артикули</th>
-                                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Сума</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('account.order_number') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('account.order_date') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('account.order_status') }}</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t('account.order_items') }}</th>
+                                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t('account.order_total') }}</th>
                                                 <th class="px-6 py-3"></th>
                                             </tr>
                                         </thead>
@@ -82,7 +79,7 @@ const menuItems = [
                                                         class="inline-block px-2 py-1 text-xs font-medium rounded-full"
                                                         :style="{ backgroundColor: order.status?.color + '20', color: order.status?.color }"
                                                     >
-                                                        {{ order.status?.name || 'Изчаква' }}
+                                                        {{ order.status?.name || t('account.pending') }}
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 text-gray-500">{{ order.items_count }}</td>
@@ -91,7 +88,7 @@ const menuItems = [
                                                 </td>
                                                 <td class="px-6 py-4 text-right">
                                                     <Link :href="`/account/orders/${order.id}`" class="text-sm font-medium" :style="{ color: primaryColor }">
-                                                        Детайли
+                                                        {{ t('account.details') }}
                                                     </Link>
                                                 </td>
                                             </tr>
@@ -108,17 +105,17 @@ const menuItems = [
                                                 class="inline-block px-2 py-1 text-xs font-medium rounded-full"
                                                 :style="{ backgroundColor: order.status?.color + '20', color: order.status?.color }"
                                             >
-                                                {{ order.status?.name || 'Изчаква' }}
+                                                {{ order.status?.name || t('account.pending') }}
                                             </span>
                                         </div>
                                         <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
                                             <span>{{ order.created_at }}</span>
-                                            <span>{{ order.items_count }} артикула</span>
+                                            <span>{{ t('account.items_count', { count: order.items_count }) }}</span>
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span class="font-semibold" :style="{ color: primaryColor }">{{ formatPrice(order.total) }}</span>
                                             <Link :href="`/account/orders/${order.id}`" class="text-sm font-medium" :style="{ color: primaryColor }">
-                                                Виж детайли
+                                                {{ t('account.see_details') }}
                                             </Link>
                                         </div>
                                     </div>
@@ -133,9 +130,9 @@ const menuItems = [
                                 <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                 </svg>
-                                <p class="text-gray-500 mb-4">Все още нямате поръчки</p>
+                                <p class="text-gray-500 mb-4">{{ t('account.no_orders') }}</p>
                                 <Link href="/products" class="inline-flex items-center px-4 py-2 text-white rounded-lg font-medium" :style="{ backgroundColor: primaryColor }">
-                                    Започни да пазаруваш
+                                    {{ t('account.start_shopping') }}
                                 </Link>
                             </div>
                         </div>

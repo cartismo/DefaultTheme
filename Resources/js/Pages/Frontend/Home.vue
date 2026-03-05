@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../Components/ProductCard.vue';
+import { useThemeTranslations } from '../../Composables/useThemeTranslations';
+import { useCurrency } from '@/Composables/useCurrency';
 
 const props = defineProps({
     settings: Object,
@@ -13,6 +15,9 @@ const props = defineProps({
     sliders: Array,
     brands: Array,
 });
+
+const { t } = useThemeTranslations();
+const { formatPrice } = useCurrency();
 
 // Theme settings
 const homepageSettings = computed(() => props.settings?.homepage || {});
@@ -54,14 +59,6 @@ const stopSlideshow = () => {
     if (slideInterval) clearInterval(slideInterval);
 };
 
-// Format price
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('bg-BG', {
-        style: 'currency',
-        currency: 'BGN',
-    }).format(price);
-};
-
 // Quick view
 const showQuickView = ref(false);
 const quickViewProduct = ref(null);
@@ -73,7 +70,7 @@ const openQuickView = (product) => {
 </script>
 
 <template>
-    <StorefrontLayout title="Начало">
+    <StorefrontLayout :title="t('home')">
         <!-- Hero Slider -->
         <section
             v-if="showSlider"
@@ -112,7 +109,7 @@ const openQuickView = (product) => {
                                         class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white rounded-xl transition-all hover:scale-105"
                                         :style="{ backgroundColor: primaryColor }"
                                     >
-                                        {{ slide.button_text || 'Виж повече' }}
+                                        {{ slide.button_text || t('see_more') }}
                                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
@@ -131,17 +128,17 @@ const openQuickView = (product) => {
                     >
                         <div class="text-center px-4">
                             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                Добре дошли в нашия магазин
+                                {{ t('homepage.welcome') }}
                             </h1>
                             <p class="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-                                Открийте невероятни продукти на страхотни цени
+                                {{ t('homepage.welcome_text') }}
                             </p>
                             <Link
                                 href="/products"
                                 class="inline-flex items-center px-8 py-4 bg-white text-lg font-semibold rounded-xl transition-all hover:scale-105"
                                 :style="{ color: primaryColor }"
                             >
-                                Разгледай продуктите
+                                {{ t('homepage.browse_products') }}
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
@@ -187,8 +184,8 @@ const openQuickView = (product) => {
         <section v-if="showFeaturedCategories && featuredCategories.length > 0" class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-900">Разгледай по категории</h2>
-                    <p class="text-gray-600 mt-2">Намери продуктите, които търсиш</p>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ t('homepage.browse_by_category') }}</h2>
+                    <p class="text-gray-600 mt-2">{{ t('homepage.find_products') }}</p>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -213,7 +210,7 @@ const openQuickView = (product) => {
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <h3 class="text-white font-semibold text-lg">{{ category.name }}</h3>
                                 <p v-if="category.products_count" class="text-white/80 text-sm">
-                                    {{ category.products_count }} продукта
+                                    {{ t('homepage.product_count', { count: category.products_count }) }}
                                 </p>
                             </div>
                         </div>
@@ -227,14 +224,14 @@ const openQuickView = (product) => {
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center justify-between mb-10">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900">Препоръчани продукти</h2>
-                        <p class="text-gray-600 mt-2">Най-добрите ни предложения за вас</p>
+                        <h2 class="text-3xl font-bold text-gray-900">{{ t('homepage.featured_products') }}</h2>
+                        <p class="text-gray-600 mt-2">{{ t('homepage.best_offers') }}</p>
                     </div>
                     <Link
                         href="/products?featured=1"
                         class="hidden sm:inline-flex items-center px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                        Виж всички
+                        {{ t('see_all') }}
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -254,7 +251,7 @@ const openQuickView = (product) => {
                     <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    <p class="text-gray-500">Няма препоръчани продукти</p>
+                    <p class="text-gray-500">{{ t('homepage.no_featured_products') }}</p>
                 </div>
             </div>
         </section>
@@ -264,14 +261,14 @@ const openQuickView = (product) => {
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center justify-between mb-10">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900">Нови продукти</h2>
-                        <p class="text-gray-600 mt-2">Последни попълнения в каталога</p>
+                        <h2 class="text-3xl font-bold text-gray-900">{{ t('homepage.new_arrivals') }}</h2>
+                        <p class="text-gray-600 mt-2">{{ t('homepage.new_arrivals_text') }}</p>
                     </div>
                     <Link
                         href="/products?sort=newest"
                         class="hidden sm:inline-flex items-center px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                        Виж всички
+                        {{ t('see_all') }}
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -307,20 +304,20 @@ const openQuickView = (product) => {
                     <div class="relative grid md:grid-cols-2 gap-8 p-8 md:p-12 lg:p-16">
                         <div class="text-white">
                             <span class="inline-block px-4 py-1 bg-white/20 rounded-full text-sm font-medium mb-4">
-                                Специална оферта
+                                {{ t('homepage.special_offer') }}
                             </span>
                             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                                До 50% отстъпка
+                                {{ t('homepage.up_to_discount') }}
                             </h2>
                             <p class="text-lg opacity-90 mb-8">
-                                на избрани продукти от новата колекция. Не пропускай!
+                                {{ t('homepage.discount_text') }}
                             </p>
                             <Link
                                 href="/products?sale=1"
                                 class="inline-flex items-center px-8 py-4 bg-white font-semibold rounded-xl transition-all hover:scale-105"
                                 :style="{ color: primaryColor }"
                             >
-                                Пазарувай сега
+                                {{ t('homepage.shop_now') }}
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
@@ -341,14 +338,14 @@ const openQuickView = (product) => {
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center justify-between mb-10">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900">Най-продавани</h2>
-                        <p class="text-gray-600 mt-2">Любимите на нашите клиенти</p>
+                        <h2 class="text-3xl font-bold text-gray-900">{{ t('homepage.bestsellers') }}</h2>
+                        <p class="text-gray-600 mt-2">{{ t('homepage.bestsellers_text') }}</p>
                     </div>
                     <Link
                         href="/products?sort=bestsellers"
                         class="hidden sm:inline-flex items-center px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                        Виж всички
+                        {{ t('see_all') }}
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -370,8 +367,8 @@ const openQuickView = (product) => {
         <section v-if="showBrands && brands?.length > 0" class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-900">Нашите марки</h2>
-                    <p class="text-gray-600 mt-2">Работим с най-добрите производители</p>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ t('homepage.brands') }}</h2>
+                    <p class="text-gray-600 mt-2">{{ t('homepage.brands_text') }}</p>
                 </div>
 
                 <div class="flex flex-wrap items-center justify-center gap-8 md:gap-12">
@@ -406,8 +403,8 @@ const openQuickView = (product) => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                             </svg>
                         </div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Безплатна доставка</h3>
-                        <p class="text-sm text-gray-500">за поръчки над 100 лв.</p>
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ t('homepage.free_shipping') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('homepage.free_shipping_text') }}</p>
                     </div>
 
                     <div class="text-center p-6">
@@ -419,8 +416,8 @@ const openQuickView = (product) => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Сигурно плащане</h3>
-                        <p class="text-sm text-gray-500">100% защитени транзакции</p>
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ t('homepage.secure_payment') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('homepage.secure_payment_text') }}</p>
                     </div>
 
                     <div class="text-center p-6">
@@ -432,8 +429,8 @@ const openQuickView = (product) => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                         </div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Лесно връщане</h3>
-                        <p class="text-sm text-gray-500">до 14 дни гаранция</p>
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ t('homepage.easy_returns') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('homepage.easy_returns_text') }}</p>
                     </div>
 
                     <div class="text-center p-6">
@@ -445,8 +442,8 @@ const openQuickView = (product) => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                         </div>
-                        <h3 class="font-semibold text-gray-900 mb-1">24/7 Поддръжка</h3>
-                        <p class="text-sm text-gray-500">винаги на линия</p>
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ t('homepage.support_24_7') }}</h3>
+                        <p class="text-sm text-gray-500">{{ t('homepage.support_text') }}</p>
                     </div>
                 </div>
             </div>

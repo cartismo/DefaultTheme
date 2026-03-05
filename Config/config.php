@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * Copyright (c) LemonDev Ltd. (ЛемънДев ООД)
+ * Email: info@lemondev.co
+ * https://cartismo.com
+ */
+
 return [
     'name' => 'DefaultTheme',
     'description' => 'The default Cartismo storefront theme. Clean, fast, and fully responsive.',
