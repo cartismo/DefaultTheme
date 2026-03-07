@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import VueSelect from '@/Components/VueSelect.vue';
@@ -20,6 +20,14 @@ const props = defineProps({
 
 const { t } = useThemeTranslations();
 const { formatPrice } = useCurrency();
+
+// Redirect to home if catalog mode
+const catalogMode = computed(() => usePage().props.store?.catalog_mode === true);
+onMounted(() => {
+    if (catalogMode.value) {
+        router.visit('/');
+    }
+});
 
 // LocalStorage key for checkout data
 const CHECKOUT_STORAGE_KEY = 'cartismo_checkout_data';

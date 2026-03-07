@@ -183,6 +183,8 @@ return [
         'coupon_label' => 'Код за отстъпка',
         'enter_code' => 'Въведете код',
         'browse_products' => 'Разгледай продукти',
+        'catalog_mode_title' => 'Режим каталог',
+        'catalog_mode_text' => 'Този магазин работи в режим каталог. Количката не е налична.',
     ],
 
     // Checkout
@@ -446,6 +448,14 @@ return [
         'terms' => 'Условия',
         'cookies' => 'Бисквитки',
         'default_description' => 'Вашият надежден онлайн магазин за качествени продукти.',
+        'free_shipping' => 'Безплатна доставка',
+        'free_shipping_text' => 'За поръчки над определена сума',
+        'secure_payment' => 'Сигурно плащане',
+        'secure_payment_text' => '100% защитени транзакции',
+        'easy_returns' => 'Лесно връщане',
+        'easy_returns_text' => 'До 14 дни гаранция',
+        'support_24_7' => '24/7 Поддръжка',
+        'support_text' => 'Винаги на линия',
     ],
 
     // Mobile Menu

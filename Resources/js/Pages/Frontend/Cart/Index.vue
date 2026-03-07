@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
@@ -22,6 +22,9 @@ const isRemoving = ref({});
 // Computed
 const isEmpty = computed(() => !localCart.value.items?.length);
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
+
+// Catalog mode
+const catalogMode = computed(() => usePage().props.store?.catalog_mode === true);
 
 // Cart settings
 const cartSettings = computed(() => props.settings?.cart || {});
@@ -95,8 +98,20 @@ const clearCart = async () => {
 
                 <h1 class="text-3xl font-bold text-gray-900 mb-8">{{ t('cart.title') }}</h1>
 
+                <!-- Catalog Mode - cart disabled -->
+                <div v-if="catalogMode" class="text-center py-16 bg-white rounded-xl border border-gray-200">
+                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('cart.catalog_mode_title') }}</h3>
+                    <p class="text-gray-500 mb-6">{{ t('cart.catalog_mode_text') }}</p>
+                    <Link href="/products" class="px-6 py-2 text-white rounded-lg" :style="{ backgroundColor: primaryColor }">
+                        {{ t('cart.browse_products') }}
+                    </Link>
+                </div>
+
                 <!-- Empty Cart -->
-                <div v-if="isEmpty" class="text-center py-16 bg-white rounded-xl border border-gray-200">
+                <div v-else-if="isEmpty" class="text-center py-16 bg-white rounded-xl border border-gray-200">
                     <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>

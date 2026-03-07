@@ -38,9 +38,17 @@ const featuredCategories = computed(() => {
     return (props.categories || []).filter(c => c.show_in_home && !c.parent_id).slice(0, 6);
 });
 
+// Filter sliders by hero_slider_id setting (if set)
+const heroSliderId = computed(() => homepageSettings.value.hero_slider_id || null);
+const filteredSliders = computed(() => {
+    if (!props.sliders?.length) return [];
+    if (!heroSliderId.value) return props.sliders;
+    return props.sliders.filter(s => s.slider_id === heroSliderId.value || s.id === heroSliderId.value);
+});
+
 // Current slide
 const currentSlide = ref(0);
-const slidesCount = computed(() => props.sliders?.length || 1);
+const slidesCount = computed(() => filteredSliders.value.length || 1);
 
 const nextSlide = () => {
     currentSlide.value = (currentSlide.value + 1) % slidesCount.value;
@@ -81,9 +89,9 @@ const openQuickView = (product) => {
             <!-- Slides -->
             <div class="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
                 <!-- If we have sliders from DB -->
-                <template v-if="sliders?.length > 0">
+                <template v-if="filteredSliders.length > 0">
                     <div
-                        v-for="(slide, index) in sliders"
+                        v-for="(slide, index) in filteredSliders"
                         :key="slide.id"
                         class="absolute inset-0 transition-opacity duration-500"
                         :class="index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'"
@@ -170,7 +178,7 @@ const openQuickView = (product) => {
                 <!-- Dots -->
                 <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
                     <button
-                        v-for="(_, index) in sliders"
+                        v-for="(_, index) in filteredSliders"
                         :key="index"
                         @click="currentSlide = index"
                         class="w-3 h-3 rounded-full transition-all"

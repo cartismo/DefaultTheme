@@ -16,6 +16,7 @@ const props = defineProps({
 
 const { t } = useThemeTranslations();
 const { formatPrice } = useCurrency();
+const page = usePage();
 
 // Colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
@@ -28,6 +29,9 @@ const showStockStatus = computed(() => productPageSettings.value.show_stock_stat
 const showSku = computed(() => productPageSettings.value.show_sku !== false);
 const showSocialShare = computed(() => productPageSettings.value.show_social_share !== false);
 const galleryStyle = computed(() => productPageSettings.value.gallery_style || 'thumbnails');
+
+// Catalog mode from store
+const catalogMode = computed(() => page.props.store?.catalog_mode === true);
 
 // Gallery
 const selectedImage = ref(0);
@@ -88,8 +92,6 @@ const totalPrice = computed(() => {
 
     return price * quantity.value;
 });
-
-const page = usePage();
 
 // Add to cart
 const addToCart = async () => {
@@ -187,7 +189,7 @@ const showZoom = ref(false);
 
                                     <!-- Badges -->
                                     <div class="absolute top-4 left-4 flex flex-col gap-2">
-                                        <span v-if="product.discount_percent" class="px-3 py-1 text-sm font-bold text-white bg-red-500 rounded-lg">
+                                        <span v-if="product.discount_percent && !catalogMode" class="px-3 py-1 text-sm font-bold text-white bg-red-500 rounded-lg">
                                             -{{ product.discount_percent }}%
                                         </span>
                                         <span v-if="product.tag" class="px-3 py-1 text-sm font-bold text-white rounded-lg" :style="{ backgroundColor: primaryColor }">
@@ -260,7 +262,7 @@ const showZoom = ref(false);
                             </div>
 
                             <!-- Price -->
-                            <div class="flex items-baseline gap-3">
+                            <div v-if="!catalogMode" class="flex items-baseline gap-3">
                                 <span class="text-3xl font-bold" :style="{ color: primaryColor }">
                                     {{ formatPrice(product.final_price) }}
                                 </span>
@@ -312,7 +314,7 @@ const showZoom = ref(false);
                                     >
                                         <option v-for="value in option.values" :key="value.id" :value="value.id">
                                             {{ value.name }}
-                                            <template v-if="value.price">
+                                            <template v-if="value.price && !catalogMode">
                                                 ({{ value.price_prefix }}{{ formatPrice(value.price) }})
                                             </template>
                                         </option>
@@ -341,7 +343,7 @@ const showZoom = ref(false);
                             </div>
 
                             <!-- Quantity & Add to Cart -->
-                            <div class="flex items-center gap-4">
+                            <div v-if="!catalogMode" class="flex items-center gap-4">
                                 <!-- Quantity -->
                                 <div class="flex items-center border border-gray-300 rounded-lg">
                                     <button

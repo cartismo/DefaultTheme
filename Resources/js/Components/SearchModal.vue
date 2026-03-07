@@ -16,6 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const primaryColor = inject('primaryColor', computed(() => '#4334db'));
+const catalogMode = inject('catalogMode', computed(() => false));
 const { formatPrice } = useCurrency();
 const { t } = useThemeTranslations();
 
@@ -167,7 +168,7 @@ const clickResult = () => {
                                 <p class="font-medium text-gray-900 truncate">{{ product.name }}</p>
                                 <p class="text-sm text-gray-500">{{ product.category?.name }}</p>
                             </div>
-                            <div class="text-right">
+                            <div v-if="!catalogMode" class="text-right">
                                 <p class="font-bold" :style="{ color: primaryColor }">{{ formatPrice(product.final_price) }}</p>
                                 <p v-if="product.final_price < product.price" class="text-sm text-gray-400 line-through">
                                     {{ formatPrice(product.price) }}

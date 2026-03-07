@@ -27,6 +27,7 @@ const props = defineProps({
 const emit = defineEmits(['quick-view', 'add-to-wishlist', 'add-to-compare']);
 
 const primaryColor = inject('primaryColor', computed(() => '#4334db'));
+const catalogMode = inject('catalogMode', computed(() => false));
 const { formatPrice } = useCurrency();
 const { t } = useThemeTranslations();
 
@@ -81,7 +82,7 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
             </Link>
 
             <div class="absolute top-3 left-3 flex flex-col gap-2">
-                <span v-if="hasDiscount" class="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-lg">
+                <span v-if="hasDiscount && !catalogMode" class="px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-lg">
                     -{{ discountPercent }}%
                 </span>
                 <span
@@ -160,7 +161,7 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
                 <span class="text-xs text-gray-500">({{ reviewCount }})</span>
             </div>
 
-            <div class="mt-3 flex items-center gap-2">
+            <div v-if="!catalogMode" class="mt-3 flex items-center gap-2">
                 <span class="text-lg font-bold" :style="{ color: primaryColor }">
                     {{ formatPrice(product.final_price) }}
                 </span>
@@ -170,6 +171,7 @@ const reviewCount = computed(() => props.product.reviews_count || 0);
             </div>
 
             <button
+                v-if="!catalogMode"
                 @click="addToCart"
                 :disabled="!inStock"
                 class="w-full mt-4 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"

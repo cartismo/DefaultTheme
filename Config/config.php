@@ -57,6 +57,8 @@ return [
             'show_newsletter' => true,
             'products_per_row' => 4,
             'featured_products_limit' => 8,
+            'hero_slider_id' => null,
+            'banner_slider_id' => null,
         ],
 
         // Product Listing
@@ -84,9 +86,7 @@ return [
         // Cart & Checkout
         'cart' => [
             'show_mini_cart' => true,
-            'mini_cart_style' => 'dropdown', // dropdown, sidebar
             'show_cart_totals' => true,
-            'show_shipping_calculator' => true,
         ],
 
         // Header

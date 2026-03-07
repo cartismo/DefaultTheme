@@ -134,11 +134,6 @@ const viewModes = [
     { value: 'list', label: 'List View' },
 ];
 
-const miniCartStyles = [
-    { value: 'dropdown', label: 'Dropdown', desc: 'Shows on hover' },
-    { value: 'sidebar', label: 'Sidebar', desc: 'Slides from right' },
-];
-
 // Predefined color palettes
 const colorPresets = [
     { name: 'Default', primary: '#4334db', secondary: '#5d5bf1', accent: '#F59E0B' },
@@ -854,43 +849,6 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'cart'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Mini Cart Style</h3>
-                                    </div>
-                                    <div class="p-6">
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <label
-                                                v-for="option in miniCartStyles"
-                                                :key="option.value"
-                                                class="relative cursor-pointer"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    :checked="settings.cart.mini_cart_style === option.value"
-                                                    @change="updateSetting('cart', { ...settings.cart, mini_cart_style: option.value })"
-                                                    class="sr-only"
-                                                />
-                                                <div
-                                                    class="p-4 rounded-xl border-2 transition-all"
-                                                    :class="settings.cart.mini_cart_style === option.value
-                                                        ? 'border-cyan-500 bg-cyan-50'
-                                                        : 'border-gray-200 hover:border-gray-300'"
-                                                >
-                                                    <div class="flex items-center justify-between mb-2">
-                                                        <span class="font-medium text-gray-900">{{ option.label }}</span>
-                                                        <CheckCircleIcon
-                                                            v-if="settings.cart.mini_cart_style === option.value"
-                                                            class="w-5 h-5 text-cyan-500"
-                                                        />
-                                                    </div>
-                                                    <p class="text-xs text-gray-500">{{ option.desc }}</p>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                                         <h3 class="font-semibold text-gray-900">Cart Features</h3>
                                     </div>
                                     <div class="p-6">
@@ -898,8 +856,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                             <label
                                                 v-for="(label, key) in {
                                                     show_mini_cart: 'Mini Cart',
-                                                    show_cart_totals: 'Cart Totals',
-                                                    show_shipping_calculator: 'Shipping Calculator'
+                                                    show_cart_totals: 'Cart Totals'
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"

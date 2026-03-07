@@ -44,6 +44,9 @@ const { t } = useThemeTranslations();
 // Colors
 const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
+// Catalog mode from store
+const catalogMode = computed(() => page.props.store?.catalog_mode === true);
+
 // Header settings
 const headerSettings = computed(() => props.settings?.header || {});
 const showTopBar = computed(() => headerSettings.value.show_top_bar !== false);
@@ -681,7 +684,7 @@ onUnmounted(() => {
 
                         <!-- Cart -->
                         <button
-                            v-if="showCart"
+                            v-if="showCart && !catalogMode"
                             @click="$emit('open-cart')"
                             class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg flex items-center"
                         >

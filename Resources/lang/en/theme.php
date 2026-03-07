@@ -183,6 +183,8 @@ return [
         'coupon_label' => 'Discount code',
         'enter_code' => 'Enter code',
         'browse_products' => 'Browse Products',
+        'catalog_mode_title' => 'Catalog Mode',
+        'catalog_mode_text' => 'This store is operating in catalog mode. Shopping cart is not available.',
     ],
 
     // Checkout
@@ -446,6 +448,14 @@ return [
         'terms' => 'Terms',
         'cookies' => 'Cookies',
         'default_description' => 'Your reliable online store for quality products.',
+        'free_shipping' => 'Free Shipping',
+        'free_shipping_text' => 'On orders over a certain amount',
+        'secure_payment' => 'Secure Payment',
+        'secure_payment_text' => '100% protected transactions',
+        'easy_returns' => 'Easy Returns',
+        'easy_returns_text' => 'Up to 14 days guarantee',
+        'support_24_7' => '24/7 Support',
+        'support_text' => 'Always online',
     ],
 
     // Mobile Menu

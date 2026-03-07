@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../../Components/ProductCard.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -16,6 +16,9 @@ const props = defineProps({
 });
 
 const { t } = useThemeTranslations();
+
+// Catalog mode
+const catalogMode = computed(() => usePage().props.store?.catalog_mode === true);
 
 // Product listing settings
 const listingSettings = computed(() => props.settings?.product_listing || {});
@@ -151,7 +154,7 @@ const hasActiveFilters = computed(() => {
                             </div>
 
                             <!-- Price Range -->
-                            <div class="mb-6">
+                            <div v-if="!catalogMode" class="mb-6">
                                 <h4 class="text-sm font-medium text-gray-900 mb-3">{{ t('listing.price_range') }}</h4>
                                 <div class="flex items-center gap-2">
                                     <input v-model="localFilters.min_price" type="number" :placeholder="t('listing.from_placeholder')" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg" />

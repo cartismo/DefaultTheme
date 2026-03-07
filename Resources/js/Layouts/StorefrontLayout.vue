@@ -49,6 +49,10 @@ provide('menus', menus);
 const primaryColor = computed(() => settings.value?.colors?.primary || '#4334db');
 const secondaryColor = computed(() => settings.value?.colors?.secondary || '#5d5bf1');
 const accentColor = computed(() => settings.value?.colors?.accent || '#F59E0B');
+const successColor = computed(() => settings.value?.colors?.success || '#10B981');
+const warningColor = computed(() => settings.value?.colors?.warning || '#F59E0B');
+const dangerColor = computed(() => settings.value?.colors?.danger || '#F43F5E');
+const infoColor = computed(() => settings.value?.colors?.info || '#3B82F6');
 
 // Provide colors
 provide('primaryColor', primaryColor);
@@ -61,13 +65,28 @@ const containerWidth = computed(() => layoutSettings.value.container_width || 'd
 const headerStyle = computed(() => layoutSettings.value.header_style || 'default');
 const footerStyle = computed(() => layoutSettings.value.footer_style || 'default');
 
+// Container width CSS value
+const containerMaxWidth = computed(() => {
+    const widths = { default: '80rem', wide: '90rem', full: '100%' };
+    return widths[containerWidth.value] || '80rem';
+});
+
+// Typography settings
+const fontFamily = computed(() => settings.value?.typography?.font_family || 'Inter');
+const fontSizeBase = computed(() => settings.value?.typography?.font_size_base || '16px');
+const headingFontFamily = computed(() => settings.value?.typography?.heading_font_family || 'Inter');
+
 provide('containerWidth', containerWidth);
 provide('headerStyle', headerStyle);
 provide('footerStyle', footerStyle);
 
+// Catalog mode - from store settings (hides prices, cart, and checkout)
+const catalogMode = computed(() => store.value?.catalog_mode === true);
+provide('catalogMode', catalogMode);
+
 // Cart settings
 const cartSettings = computed(() => settings.value?.cart || {});
-const showMiniCartEnabled = computed(() => cartSettings.value.show_mini_cart !== false);
+const showMiniCartEnabled = computed(() => !catalogMode.value && cartSettings.value.show_mini_cart !== false);
 
 // Cart methods
 const openMiniCart = () => {
@@ -169,5 +188,28 @@ const pageTitle = computed(() => {
     --color-primary: v-bind(primaryColor);
     --color-secondary: v-bind(secondaryColor);
     --color-accent: v-bind(accentColor);
+    --color-success: v-bind(successColor);
+    --color-warning: v-bind(warningColor);
+    --color-danger: v-bind(dangerColor);
+    --color-info: v-bind(infoColor);
+    --container-max-width: v-bind(containerMaxWidth);
+    --font-family: v-bind(fontFamily);
+    --font-size-base: v-bind(fontSizeBase);
+    --heading-font-family: v-bind(headingFontFamily);
+}
+
+/* Apply container width to all max-w-7xl containers */
+.max-w-7xl {
+    max-width: var(--container-max-width) !important;
+}
+
+/* Typography from theme settings */
+body {
+    font-family: var(--font-family), system-ui, sans-serif;
+    font-size: var(--font-size-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font-family), system-ui, sans-serif;
 }
 </style>
