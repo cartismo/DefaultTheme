@@ -26,7 +26,7 @@ const props = defineProps({
 
 const emit = defineEmits(['quick-view', 'add-to-wishlist', 'add-to-compare']);
 
-const primaryColor = inject('primaryColor', computed(() => '#4F46E5'));
+const primaryColor = inject('primaryColor', computed(() => '#4334db'));
 const { formatPrice } = useCurrency();
 const { t } = useThemeTranslations();
 

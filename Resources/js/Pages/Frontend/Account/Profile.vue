@@ -10,7 +10,7 @@ const props = defineProps({
 });
 
 const { t } = useThemeTranslations();
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 const form = useForm({
     first_name: props.customer.first_name || '',

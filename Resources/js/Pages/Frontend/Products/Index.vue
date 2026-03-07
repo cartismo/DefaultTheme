@@ -15,8 +15,18 @@ const props = defineProps({
 
 const { t } = useThemeTranslations();
 
+// Product listing settings
+const listingSettings = computed(() => props.settings?.product_listing || {});
+const layoutSettings = computed(() => props.settings?.layout || {});
+const showFiltersPanel = computed(() => listingSettings.value.show_filters !== false);
+const showSorting = computed(() => listingSettings.value.show_sorting !== false);
+const showCompare = computed(() => listingSettings.value.show_compare !== false);
+const showWishlistCards = computed(() => listingSettings.value.show_wishlist !== false);
+const showQuickViewCards = computed(() => listingSettings.value.show_quick_view !== false);
+const sidebarPosition = computed(() => layoutSettings.value.sidebar_position || 'left');
+
 // View mode (grid/list)
-const viewMode = ref('grid');
+const viewMode = ref(listingSettings.value.default_view || 'grid');
 
 // Filters panel (mobile)
 const showFilters = ref(false);
@@ -64,7 +74,7 @@ const changeSort = (sort) => {
 };
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Has active filters
 const hasActiveFilters = computed(() => {
@@ -90,9 +100,9 @@ const hasActiveFilters = computed(() => {
             </div>
 
             <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex gap-8">
+                <div class="flex gap-8" :class="sidebarPosition === 'right' ? 'flex-row-reverse' : ''">
                     <!-- Sidebar Filters (Desktop) -->
-                    <div class="hidden lg:block w-64 flex-shrink-0">
+                    <div v-if="showFiltersPanel && sidebarPosition !== 'none'" class="hidden lg:block w-64 flex-shrink-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="font-semibold text-gray-900">{{ t('listing.filters') }}</h3>
@@ -205,6 +215,7 @@ const hasActiveFilters = computed(() => {
                             <div class="flex flex-wrap items-center justify-between gap-4">
                                 <!-- Mobile Filter Button -->
                                 <button
+                                    v-if="showFiltersPanel"
                                     @click="showFilters = true"
                                     class="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                                 >
@@ -215,7 +226,7 @@ const hasActiveFilters = computed(() => {
                                 </button>
 
                                 <!-- Sort -->
-                                <div class="flex items-center gap-2">
+                                <div v-if="showSorting" class="flex items-center gap-2">
                                     <span class="text-sm text-gray-600 hidden sm:inline">{{ t('listing.sort_label') }}</span>
                                     <select
                                         v-model="localFilters.sort"
@@ -300,6 +311,9 @@ const hasActiveFilters = computed(() => {
                                     v-for="product in products.data"
                                     :key="product.id"
                                     :product="product"
+                                    :show-wishlist="showWishlistCards"
+                                    :show-quick-view="showQuickViewCards"
+                                    :show-compare="showCompare"
                                 />
                             </div>
 

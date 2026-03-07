@@ -13,7 +13,7 @@ const page = usePage();
 const status = computed(() => page.props.flash?.success);
 
 // Theme colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 const form = useForm({
     email: '',

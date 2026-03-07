@@ -18,7 +18,16 @@ const { t } = useThemeTranslations();
 const { formatPrice } = useCurrency();
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
+
+// Product page settings
+const productPageSettings = computed(() => props.settings?.product_page || {});
+const showRelatedProducts = computed(() => productPageSettings.value.show_related_products !== false);
+const showReviews = computed(() => productPageSettings.value.show_reviews !== false);
+const showStockStatus = computed(() => productPageSettings.value.show_stock_status !== false);
+const showSku = computed(() => productPageSettings.value.show_sku !== false);
+const showSocialShare = computed(() => productPageSettings.value.show_social_share !== false);
+const galleryStyle = computed(() => productPageSettings.value.gallery_style || 'thumbnails');
 
 // Gallery
 const selectedImage = ref(0);
@@ -144,53 +153,80 @@ const showZoom = ref(false);
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="grid lg:grid-cols-2 gap-8 p-6 lg:p-8">
                         <!-- Gallery -->
-                        <div class="space-y-4">
-                            <!-- Main Image -->
-                            <div
-                                class="relative aspect-square rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
-                                @click="showZoom = true"
-                            >
-                                <img
-                                    v-if="allImages[selectedImage]"
-                                    :src="allImages[selectedImage].urls?.large || allImages[selectedImage].url"
-                                    :alt="product.name"
-                                    class="w-full h-full object-contain"
-                                />
-                                <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-
-                                <!-- Badges -->
-                                <div class="absolute top-4 left-4 flex flex-col gap-2">
-                                    <span v-if="product.discount_percent" class="px-3 py-1 text-sm font-bold text-white bg-red-500 rounded-lg">
-                                        -{{ product.discount_percent }}%
-                                    </span>
-                                    <span v-if="product.tag" class="px-3 py-1 text-sm font-bold text-white rounded-lg" :style="{ backgroundColor: primaryColor }">
-                                        {{ product.tag }}
-                                    </span>
-                                </div>
-
-                                <!-- Zoom icon -->
-                                <div class="absolute bottom-4 right-4 p-2 bg-white/80 rounded-lg">
-                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <!-- Thumbnails -->
-                            <div v-if="allImages.length > 1" class="flex gap-3 overflow-x-auto pb-2">
+                        <div :class="galleryStyle === 'vertical' ? 'flex gap-4' : 'space-y-4'">
+                            <!-- Vertical Thumbnails (left side) -->
+                            <div v-if="galleryStyle === 'vertical' && allImages.length > 1" class="flex flex-col gap-2 w-20 flex-shrink-0">
                                 <button
                                     v-for="(image, index) in allImages"
                                     :key="image.id"
                                     @click="selectedImage = index"
-                                    class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all"
+                                    class="w-20 h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0"
                                     :class="selectedImage === index ? 'border-indigo-500' : 'border-gray-200 hover:border-gray-300'"
                                 >
                                     <img :src="image.url" :alt="`${product.name} ${index + 1}`" class="w-full h-full object-cover" />
                                 </button>
+                            </div>
+
+                            <div class="flex-1 space-y-4">
+                                <!-- Main Image -->
+                                <div
+                                    class="relative aspect-square rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
+                                    @click="showZoom = true"
+                                >
+                                    <img
+                                        v-if="allImages[selectedImage]"
+                                        :src="allImages[selectedImage].urls?.large || allImages[selectedImage].url"
+                                        :alt="product.name"
+                                        class="w-full h-full object-contain"
+                                    />
+                                    <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
+                                        <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+
+                                    <!-- Badges -->
+                                    <div class="absolute top-4 left-4 flex flex-col gap-2">
+                                        <span v-if="product.discount_percent" class="px-3 py-1 text-sm font-bold text-white bg-red-500 rounded-lg">
+                                            -{{ product.discount_percent }}%
+                                        </span>
+                                        <span v-if="product.tag" class="px-3 py-1 text-sm font-bold text-white rounded-lg" :style="{ backgroundColor: primaryColor }">
+                                            {{ product.tag }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Zoom icon -->
+                                    <div class="absolute bottom-4 right-4 p-2 bg-white/80 rounded-lg">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Horizontal Thumbnails (below) -->
+                                <div v-if="galleryStyle === 'thumbnails' && allImages.length > 1" class="flex gap-3 overflow-x-auto pb-2">
+                                    <button
+                                        v-for="(image, index) in allImages"
+                                        :key="image.id"
+                                        @click="selectedImage = index"
+                                        class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all"
+                                        :class="selectedImage === index ? 'border-indigo-500' : 'border-gray-200 hover:border-gray-300'"
+                                    >
+                                        <img :src="image.url" :alt="`${product.name} ${index + 1}`" class="w-full h-full object-cover" />
+                                    </button>
+                                </div>
+
+                                <!-- Dots (below) -->
+                                <div v-if="galleryStyle === 'dots' && allImages.length > 1" class="flex justify-center gap-2">
+                                    <button
+                                        v-for="(image, index) in allImages"
+                                        :key="image.id"
+                                        @click="selectedImage = index"
+                                        class="w-3 h-3 rounded-full transition-all"
+                                        :class="selectedImage === index ? 'w-8' : 'bg-gray-300 hover:bg-gray-400'"
+                                        :style="selectedImage === index ? { backgroundColor: primaryColor } : {}"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -234,7 +270,7 @@ const showZoom = ref(false);
                             </div>
 
                             <!-- Stock Status -->
-                            <div class="flex items-center gap-2">
+                            <div v-if="showStockStatus" class="flex items-center gap-2">
                                 <span
                                     v-if="product.in_stock"
                                     class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium"
@@ -358,7 +394,7 @@ const showZoom = ref(false);
 
                             <!-- Product Meta -->
                             <div class="pt-6 border-t border-gray-200 space-y-2 text-sm">
-                                <div v-if="product.sku" class="flex">
+                                <div v-if="showSku && product.sku" class="flex">
                                     <span class="w-24 text-gray-500">{{ t('product.sku') }}</span>
                                     <span class="text-gray-900 font-mono">{{ product.sku }}</span>
                                 </div>
@@ -402,6 +438,7 @@ const showZoom = ref(false);
                                 {{ t('product.specifications') }}
                             </button>
                             <button
+                                v-if="showReviews"
                                 @click="activeTab = 'reviews'"
                                 class="px-6 py-4 text-sm font-medium border-b-2 transition-colors"
                                 :class="activeTab === 'reviews'
@@ -440,14 +477,30 @@ const showZoom = ref(false);
                         </div>
 
                         <!-- Reviews -->
-                        <div v-show="activeTab === 'reviews'">
+                        <div v-if="showReviews" v-show="activeTab === 'reviews'">
                             <p class="text-gray-500">{{ t('product.no_reviews') }}</p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Social Share -->
+                <div v-if="showSocialShare" class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">{{ t('product.share') }}</h3>
+                    <div class="flex gap-3">
+                        <a :href="`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 011-1h3v-4h-3a5 5 0 00-5 5v2.01h-2l-.396 3.98h2.396v8.01z"/></svg>
+                        </a>
+                        <a :href="`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <button @click="navigator.clipboard.writeText(window.location.href)" class="w-10 h-10 bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Related Products -->
-                <div v-if="relatedProducts?.length > 0" class="mt-12">
+                <div v-if="showRelatedProducts && relatedProducts?.length > 0" class="mt-12">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ t('product.related_products') }}</h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                         <ProductCard v-for="relatedProduct in relatedProducts" :key="relatedProduct.id" :product="relatedProduct" />

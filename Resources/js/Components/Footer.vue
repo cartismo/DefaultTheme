@@ -16,9 +16,14 @@ const footerSettings = computed(() => props.settings?.footer || {});
 const showNewsletter = computed(() => footerSettings.value.show_newsletter !== false);
 const showSocialLinks = computed(() => footerSettings.value.show_social_links !== false);
 const showPaymentIcons = computed(() => footerSettings.value.show_payment_icons !== false);
+const footerColumns = computed(() => footerSettings.value.columns || 4);
+
+// Footer style
+const footerStyle = computed(() => props.settings?.layout?.footer_style || 'default');
+const isMinimalFooter = computed(() => footerStyle.value === 'minimal');
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Get footer menus
 const footerMenu1 = computed(() => props.menus?.footer_1 || props.menus?.footer || null);
@@ -52,7 +57,7 @@ const socialLinks = computed(() => props.store?.social_links || {});
 <template>
     <footer class="bg-gray-900 text-white">
         <!-- Newsletter Section -->
-        <div v-if="showNewsletter" class="border-b border-gray-800">
+        <div v-if="showNewsletter && !isMinimalFooter" class="border-b border-gray-800">
             <div class="max-w-7xl mx-auto px-4 py-12">
                 <div class="max-w-2xl mx-auto text-center">
                     <h3 class="text-2xl font-bold mb-2">{{ t('footer.newsletter_title') }}</h3>
@@ -84,14 +89,28 @@ const socialLinks = computed(() => props.store?.social_links || {});
         </div>
 
         <!-- Main Footer Content -->
-        <div class="max-w-7xl mx-auto px-4 py-12">
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        <div v-if="!isMinimalFooter" class="max-w-7xl mx-auto px-4 py-12">
+            <div class="grid gap-8" :class="{
+                'grid-cols-2 md:grid-cols-2 lg:grid-cols-3': footerColumns === 2,
+                'grid-cols-2 md:grid-cols-3 lg:grid-cols-4': footerColumns === 3,
+                'grid-cols-2 md:grid-cols-4 lg:grid-cols-5': footerColumns === 4,
+                'grid-cols-2 md:grid-cols-4 lg:grid-cols-6': footerColumns === 5,
+            }">
                 <!-- Company Info -->
                 <div class="col-span-2 md:col-span-4 lg:col-span-1">
                     <Link href="/" class="inline-block mb-4">
-                        <span class="text-2xl font-bold" :style="{ color: primaryColor }">
-                            {{ store?.name || 'Cartismo' }}
-                        </span>
+                        <img
+                            v-if="store?.logo"
+                            :src="store.logo"
+                            :alt="store?.name || 'Store'"
+                            class="h-8 w-auto brightness-0 invert"
+                        />
+                        <img
+                            v-else
+                            src="/modules/defaulttheme/images/logo.svg"
+                            :alt="store?.name || 'Cartismo'"
+                            class="h-8 w-auto brightness-0 invert"
+                        />
                     </Link>
                     <p class="text-gray-400 text-sm mb-4">
                         {{ store?.description || t('footer.default_description') }}

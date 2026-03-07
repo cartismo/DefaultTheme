@@ -42,7 +42,7 @@ const {
 const { t } = useThemeTranslations();
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Header settings
 const headerSettings = computed(() => props.settings?.header || {});
@@ -53,6 +53,15 @@ const showWishlist = computed(() => headerSettings.value.show_wishlist !== false
 const showCart = computed(() => headerSettings.value.show_cart !== false);
 const stickyHeader = computed(() => headerSettings.value.sticky_header !== false);
 const showCategoriesMenu = computed(() => headerSettings.value.show_categories_menu !== false);
+
+// Layout style
+const headerStyle = computed(() => props.settings?.layout?.header_style || 'default');
+const isMinimal = computed(() => headerStyle.value === 'minimal');
+const isCentered = computed(() => headerStyle.value === 'centered');
+
+// Minimal style overrides: hide top bar and categories
+const effectiveShowTopBar = computed(() => isMinimal.value ? false : showTopBar.value);
+const effectiveShowCategoriesMenu = computed(() => isMinimal.value ? false : showCategoriesMenu.value);
 
 // Get main menu items
 const mainMenuItems = computed(() => {
@@ -255,7 +264,7 @@ onUnmounted(() => {
         ]"
     >
         <!-- Top Bar -->
-        <div v-if="showTopBar" class="bg-gray-900 text-gray-300 text-sm">
+        <div v-if="effectiveShowTopBar" class="bg-gray-900 text-gray-300 text-sm">
             <div class="max-w-7xl mx-auto px-4 py-2">
                 <div class="flex items-center justify-between">
                     <!-- Left: Contact Info -->
@@ -362,7 +371,10 @@ onUnmounted(() => {
         <!-- Main Header -->
         <div class="border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center justify-between h-16 lg:h-20 gap-4">
+                <div
+                    class="flex items-center h-16 lg:h-20 gap-4"
+                    :class="isCentered ? 'justify-center flex-wrap lg:flex-nowrap' : 'justify-between'"
+                >
                     <!-- Mobile Menu Button -->
                     <button
                         @click="$emit('toggle-mobile-menu')"
@@ -381,9 +393,12 @@ onUnmounted(() => {
                             :alt="store?.name || 'Store'"
                             class="h-8 lg:h-10 w-auto"
                         />
-                        <span v-else class="text-xl lg:text-2xl font-bold" :style="{ color: primaryColor }">
-                            {{ store?.name || 'Cartismo' }}
-                        </span>
+                        <img
+                            v-else
+                            src="/modules/defaulttheme/images/logo.svg"
+                            :alt="store?.name || 'Cartismo'"
+                            class="h-8 lg:h-10 w-auto"
+                        />
                     </Link>
 
                     <!-- Desktop Search Bar -->
@@ -688,7 +703,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Navigation Bar with Categories -->
-        <nav v-if="showCategoriesMenu && menuCategories.length > 0" class="hidden lg:block bg-white border-b border-gray-100">
+        <nav v-if="effectiveShowCategoriesMenu && menuCategories.length > 0" class="hidden lg:block bg-white border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center space-x-1 h-12">
                     <!-- All Categories Button -->

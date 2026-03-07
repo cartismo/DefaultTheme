@@ -31,7 +31,7 @@ const showNewsletter = computed(() => homepageSettings.value.show_newsletter !==
 const productsPerRow = computed(() => homepageSettings.value.products_per_row || 4);
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Featured categories (show_in_home)
 const featuredCategories = computed(() => {
@@ -238,7 +238,12 @@ const openQuickView = (product) => {
                     </Link>
                 </div>
 
-                <div v-if="featuredProducts?.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div v-if="featuredProducts?.length > 0" class="grid grid-cols-2 gap-4 lg:gap-6" :class="{
+                    'md:grid-cols-2 lg:grid-cols-3': productsPerRow === 3,
+                    'md:grid-cols-3 lg:grid-cols-4': productsPerRow === 4,
+                    'md:grid-cols-3 lg:grid-cols-5': productsPerRow === 5,
+                    'md:grid-cols-4 lg:grid-cols-6': productsPerRow === 6,
+                }">
                     <ProductCard
                         v-for="product in featuredProducts"
                         :key="product.id"
@@ -275,7 +280,12 @@ const openQuickView = (product) => {
                     </Link>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div class="grid grid-cols-2 gap-4 lg:gap-6" :class="{
+                    'md:grid-cols-2 lg:grid-cols-3': productsPerRow === 3,
+                    'md:grid-cols-3 lg:grid-cols-4': productsPerRow === 4,
+                    'md:grid-cols-3 lg:grid-cols-5': productsPerRow === 5,
+                    'md:grid-cols-4 lg:grid-cols-6': productsPerRow === 6,
+                }">
                     <ProductCard
                         v-for="product in newProducts"
                         :key="product.id"
@@ -352,7 +362,12 @@ const openQuickView = (product) => {
                     </Link>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div class="grid grid-cols-2 gap-4 lg:gap-6" :class="{
+                    'md:grid-cols-2 lg:grid-cols-3': productsPerRow === 3,
+                    'md:grid-cols-3 lg:grid-cols-4': productsPerRow === 4,
+                    'md:grid-cols-3 lg:grid-cols-5': productsPerRow === 5,
+                    'md:grid-cols-4 lg:grid-cols-6': productsPerRow === 6,
+                }">
                     <ProductCard
                         v-for="product in bestsellers"
                         :key="product.id"

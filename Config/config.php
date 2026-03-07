@@ -28,14 +28,14 @@ return [
             'container_width' => 'default', // default, wide, full
         ],
 
-        // Colors
+        // Colors (Cartismo brand palette)
         'colors' => [
-            'primary' => '#4F46E5',      // Indigo
-            'secondary' => '#6B7280',    // Gray
-            'accent' => '#F59E0B',       // Amber
-            'success' => '#10B981',      // Emerald
-            'warning' => '#F59E0B',      // Amber
-            'danger' => '#EF4444',       // Red
+            'primary' => '#4334db',      // Brand primary (deep indigo)
+            'secondary' => '#5d5bf1',    // Brand secondary (light indigo)
+            'accent' => '#F59E0B',       // Amber Orange
+            'success' => '#10B981',      // Emerald Green
+            'warning' => '#F59E0B',      // Amber Orange
+            'danger' => '#F43F5E',       // Rose Red
             'info' => '#3B82F6',         // Blue
         ],
 

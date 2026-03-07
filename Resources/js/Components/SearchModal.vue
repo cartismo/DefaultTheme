@@ -15,7 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-const primaryColor = inject('primaryColor', computed(() => '#4F46E5'));
+const primaryColor = inject('primaryColor', computed(() => '#4334db'));
 const { formatPrice } = useCurrency();
 const { t } = useThemeTranslations();
 

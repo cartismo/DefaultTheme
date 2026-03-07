@@ -17,8 +17,18 @@ const props = defineProps({
 
 const { t } = useThemeTranslations();
 
+// Product listing settings
+const listingSettings = computed(() => props.settings?.product_listing || {});
+const layoutSettings = computed(() => props.settings?.layout || {});
+const showFiltersPanel = computed(() => listingSettings.value.show_filters !== false);
+const showSorting = computed(() => listingSettings.value.show_sorting !== false);
+const showCompare = computed(() => listingSettings.value.show_compare !== false);
+const showWishlistCards = computed(() => listingSettings.value.show_wishlist !== false);
+const showQuickViewCards = computed(() => listingSettings.value.show_quick_view !== false);
+const sidebarPosition = computed(() => layoutSettings.value.sidebar_position || 'left');
+
 // View mode
-const viewMode = ref('grid');
+const viewMode = ref(listingSettings.value.default_view || 'grid');
 const showFilters = ref(false);
 
 // Local filter state
@@ -54,7 +64,7 @@ const resetFilters = () => {
 };
 
 // Colors
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Has active filters
 const hasActiveFilters = computed(() => {
@@ -118,9 +128,9 @@ const hasActiveFilters = computed(() => {
             </div>
 
             <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="flex gap-8">
+                <div class="flex gap-8" :class="sidebarPosition === 'right' ? 'flex-row-reverse' : ''">
                     <!-- Sidebar Filters -->
-                    <div class="hidden lg:block w-64 flex-shrink-0">
+                    <div v-if="showFiltersPanel && sidebarPosition !== 'none'" class="hidden lg:block w-64 flex-shrink-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="font-semibold text-gray-900">{{ t('listing.filters') }}</h3>
@@ -173,14 +183,14 @@ const hasActiveFilters = computed(() => {
                         <!-- Toolbar -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                             <div class="flex flex-wrap items-center justify-between gap-4">
-                                <button @click="showFilters = true" class="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                <button v-if="showFiltersPanel" @click="showFilters = true" class="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                     </svg>
                                     {{ t('listing.filters') }}
                                 </button>
 
-                                <div class="flex items-center gap-2">
+                                <div v-if="showSorting" class="flex items-center gap-2">
                                     <span class="text-sm text-gray-600 hidden sm:inline">{{ t('listing.sort_label') }}</span>
                                     <select v-model="localFilters.sort" @change="applyFilters" class="px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white">
                                         <option v-for="option in filters.sortOptions" :key="option.value" :value="option.value">
@@ -207,7 +217,7 @@ const hasActiveFilters = computed(() => {
                         <!-- Products Grid -->
                         <div v-if="products.data?.length > 0">
                             <div :class="viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6' : 'space-y-4'">
-                                <ProductCard v-for="product in products.data" :key="product.id" :product="product" />
+                                <ProductCard v-for="product in products.data" :key="product.id" :product="product" :show-wishlist="showWishlistCards" :show-quick-view="showQuickViewCards" :show-compare="showCompare" />
                             </div>
 
                             <div class="mt-8">

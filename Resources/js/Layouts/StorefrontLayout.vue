@@ -46,8 +46,8 @@ provide('categories', categories);
 provide('menus', menus);
 
 // Colors from settings
-const primaryColor = computed(() => settings.value?.colors?.primary || '#4F46E5');
-const secondaryColor = computed(() => settings.value?.colors?.secondary || '#6B7280');
+const primaryColor = computed(() => settings.value?.colors?.primary || '#4334db');
+const secondaryColor = computed(() => settings.value?.colors?.secondary || '#5d5bf1');
 const accentColor = computed(() => settings.value?.colors?.accent || '#F59E0B');
 
 // Provide colors
@@ -55,9 +55,28 @@ provide('primaryColor', primaryColor);
 provide('secondaryColor', secondaryColor);
 provide('accentColor', accentColor);
 
+// Layout settings
+const layoutSettings = computed(() => settings.value?.layout || {});
+const containerWidth = computed(() => layoutSettings.value.container_width || 'default');
+const headerStyle = computed(() => layoutSettings.value.header_style || 'default');
+const footerStyle = computed(() => layoutSettings.value.footer_style || 'default');
+
+provide('containerWidth', containerWidth);
+provide('headerStyle', headerStyle);
+provide('footerStyle', footerStyle);
+
+// Cart settings
+const cartSettings = computed(() => settings.value?.cart || {});
+const showMiniCartEnabled = computed(() => cartSettings.value.show_mini_cart !== false);
+
 // Cart methods
 const openMiniCart = () => {
-    showMiniCart.value = true;
+    if (showMiniCartEnabled.value) {
+        showMiniCart.value = true;
+    } else {
+        // Navigate to cart page when mini cart is disabled
+        window.location.href = '/cart';
+    }
 };
 
 const closeMiniCart = () => {
@@ -121,6 +140,7 @@ const pageTitle = computed(() => {
 
         <!-- Mini Cart Sidebar -->
         <MiniCart
+            v-if="showMiniCartEnabled"
             :show="showMiniCart"
             :cart="cart"
             @close="closeMiniCart"

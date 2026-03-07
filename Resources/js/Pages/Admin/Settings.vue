@@ -141,7 +141,7 @@ const miniCartStyles = [
 
 // Predefined color palettes
 const colorPresets = [
-    { name: 'Default', primary: '#4F46E5', secondary: '#6B7280', accent: '#F59E0B' },
+    { name: 'Default', primary: '#4334db', secondary: '#5d5bf1', accent: '#F59E0B' },
     { name: 'Ocean', primary: '#0891B2', secondary: '#64748B', accent: '#14B8A6' },
     { name: 'Forest', primary: '#059669', secondary: '#4B5563', accent: '#84CC16' },
     { name: 'Sunset', primary: '#DC2626', secondary: '#78716C', accent: '#F97316' },

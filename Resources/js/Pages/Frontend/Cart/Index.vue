@@ -21,7 +21,11 @@ const isRemoving = ref({});
 
 // Computed
 const isEmpty = computed(() => !localCart.value.items?.length);
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
+
+// Cart settings
+const cartSettings = computed(() => props.settings?.cart || {});
+const showCartTotals = computed(() => cartSettings.value.show_cart_totals !== false);
 
 // Update quantity
 const updateQuantity = async (cartKey, newQuantity) => {
@@ -226,7 +230,7 @@ const clearCart = async () => {
                     </div>
 
                     <!-- Order Summary -->
-                    <div class="lg:col-span-4 mt-8 lg:mt-0">
+                    <div v-if="showCartTotals" class="lg:col-span-4 mt-8 lg:mt-0">
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
                             <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t('cart.order_summary') }}</h2>
 

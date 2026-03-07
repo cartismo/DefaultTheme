@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const { t } = useThemeTranslations();
-const primaryColor = computed(() => props.settings?.colors?.primary || '#4F46E5');
+const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db');
 
 // Search form
 const searchQuery = ref(props.query || '');
