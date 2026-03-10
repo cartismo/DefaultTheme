@@ -914,6 +914,7 @@ onMounted(() => {
                                     v-if="deliveryFormConfig.component"
                                     :is="deliveryFormConfig.component"
                                     v-model="form.delivery"
+                                    :config="selectedShippingMethod?.checkout?.config || {}"
                                     :delivery-types="deliveryFormConfig.delivery_types || ['office']"
                                     :show-map="deliveryFormConfig.show_map || false"
                                     :country-id="deliveryFormConfig.country_id || null"
