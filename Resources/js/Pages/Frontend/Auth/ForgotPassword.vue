@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
@@ -26,8 +26,6 @@ const submit = () => {
 
 <template>
     <StorefrontLayout :title="t('auth.forgot_password_title')">
-        <Head :title="t('auth.forgot_password_title')" />
-
         <div class="min-h-[70vh] flex items-center justify-center py-12 px-4">
             <div class="w-full max-w-md">
                 <!-- Card -->

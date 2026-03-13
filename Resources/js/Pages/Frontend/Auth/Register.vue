@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 
@@ -33,8 +33,6 @@ const submit = () => {
 
 <template>
     <StorefrontLayout :title="t('auth.register')">
-        <Head :title="t('auth.register')" />
-
         <div class="min-h-[70vh] flex items-center justify-center py-12 px-4">
             <div class="w-full max-w-lg">
                 <!-- Card -->

@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed, provide } from 'vue';
-import { usePage, Link, Head } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 import Header from '../Components/Header.vue';
 import Footer from '../Components/Footer.vue';
 import MiniCart from '../Components/MiniCart.vue';
 import MobileMenu from '../Components/MobileMenu.vue';
 import SearchModal from '../Components/SearchModal.vue';
+import ThemeSeoHead from '../Components/ThemeSeoHead.vue';
 
 const props = defineProps({
     title: {
@@ -129,7 +130,7 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-    <Head :title="pageTitle" />
+    <ThemeSeoHead :fallback-title="pageTitle" />
 
     <div class="min-h-screen flex flex-col bg-gray-50">
         <!-- Header -->

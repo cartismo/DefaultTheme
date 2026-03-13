@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue';
-import { Head } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 
 defineOptions({ layout: StorefrontLayout });
@@ -14,11 +13,6 @@ const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db'
 </script>
 
 <template>
-    <Head>
-        <title>{{ page.meta_title || page.title }}</title>
-        <meta v-if="page.meta_description" name="description" :content="page.meta_description" />
-    </Head>
-
     <div class="min-h-screen bg-gray-50">
         <!-- Hero Section with Image -->
         <div v-if="page.image" class="relative h-64 md:h-80 bg-gray-900">
