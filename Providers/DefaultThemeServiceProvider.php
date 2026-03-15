@@ -23,7 +23,6 @@ class DefaultThemeServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerAssets();
         $this->shareThemeTranslations();
-        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
     public function register(): void
