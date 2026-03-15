@@ -4,6 +4,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import { CheckIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -25,9 +26,7 @@ const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db'
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
                     <!-- Success Icon -->
                     <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '20' }">
-                        <svg class="w-10 h-10" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
+                        <CheckIcon class="w-10 h-10" :style="{ color: primaryColor }" />
                     </div>
 
                     <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t('checkout_success.thank_you') }}</h1>

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { PhoneIcon, EnvelopeIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/vue/24/outline';
 
 defineOptions({ layout: StorefrontLayout });
 
@@ -64,9 +65,7 @@ const successMessage = computed(() => page.props.flash?.success);
                         <!-- Phone -->
                         <div v-if="store?.phone" class="flex items-start space-x-4">
                             <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '15' }">
-                                <svg class="w-5 h-5" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
+                                <PhoneIcon class="w-5 h-5" :style="{ color: primaryColor }" />
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500">{{ t('contact.phone') }}</p>
@@ -77,9 +76,7 @@ const successMessage = computed(() => page.props.flash?.success);
                         <!-- Email -->
                         <div v-if="store?.email" class="flex items-start space-x-4">
                             <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '15' }">
-                                <svg class="w-5 h-5" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
+                                <EnvelopeIcon class="w-5 h-5" :style="{ color: primaryColor }" />
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500">{{ t('contact.email') }}</p>
@@ -90,10 +87,7 @@ const successMessage = computed(() => page.props.flash?.success);
                         <!-- Address -->
                         <div v-if="store?.address" class="flex items-start space-x-4">
                             <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '15' }">
-                                <svg class="w-5 h-5" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                <MapPinIcon class="w-5 h-5" :style="{ color: primaryColor }" />
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500">{{ t('contact.address') }}</p>
@@ -130,9 +124,7 @@ const successMessage = computed(() => page.props.flash?.success);
                         <!-- Success Message -->
                         <div v-if="successMessage" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
                             <div class="flex items-center">
-                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                <CheckCircleIcon class="w-5 h-5 text-green-500 mr-3" />
                                 <p class="text-green-700">{{ successMessage }}</p>
                             </div>
                         </div>

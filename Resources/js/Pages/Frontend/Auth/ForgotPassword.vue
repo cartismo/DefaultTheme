@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { KeyIcon, CheckCircleIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -33,9 +34,7 @@ const submit = () => {
                     <!-- Header -->
                     <div class="px-8 pt-8 pb-6 text-center border-b border-gray-100">
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '15' }">
-                            <svg class="w-8 h-8" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                            </svg>
+                            <KeyIcon class="w-8 h-8" :style="{ color: primaryColor }" />
                         </div>
                         <h1 class="text-2xl font-bold text-gray-900">{{ t('auth.forgot_password_title') }}</h1>
                         <p class="mt-2 text-gray-600 text-sm">
@@ -48,9 +47,7 @@ const submit = () => {
                         <!-- Success Message -->
                         <div v-if="status" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                             <div class="flex items-center">
-                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                <CheckCircleIcon class="w-5 h-5 text-green-600 mr-2" />
                                 <p class="text-sm text-green-700">{{ status }}</p>
                             </div>
                         </div>
@@ -106,9 +103,7 @@ const submit = () => {
                             class="inline-flex items-center text-sm font-medium hover:underline"
                             :style="{ color: primaryColor }"
                         >
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
+                            <ArrowLeftIcon class="w-4 h-4 mr-1.5" />
                             {{ t('auth.back_to_login') }}
                         </Link>
                     </div>

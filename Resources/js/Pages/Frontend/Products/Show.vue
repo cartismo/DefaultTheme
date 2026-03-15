@@ -6,6 +6,18 @@ import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../../Components/ProductCard.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import {
+    PhotoIcon,
+    MagnifyingGlassPlusIcon,
+    CheckIcon,
+    XMarkIcon,
+    MinusIcon,
+    PlusIcon,
+    ShoppingCartIcon,
+    HeartIcon,
+    ClipboardIcon,
+} from '@heroicons/vue/24/outline';
+import { StarIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
     settings: Object,
@@ -182,9 +194,7 @@ const showZoom = ref(false);
                                         class="w-full h-full object-contain"
                                     />
                                     <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
-                                        <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
+                                        <PhotoIcon class="w-24 h-24" />
                                     </div>
 
                                     <!-- Badges -->
@@ -199,9 +209,7 @@ const showZoom = ref(false);
 
                                     <!-- Zoom icon -->
                                     <div class="absolute bottom-4 right-4 p-2 bg-white/80 rounded-lg">
-                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                                        </svg>
+                                        <MagnifyingGlassPlusIcon class="w-5 h-5 text-gray-600" />
                                     </div>
                                 </div>
 
@@ -246,16 +254,12 @@ const showZoom = ref(false);
                                 <!-- Rating -->
                                 <div v-if="product.average_rating > 0" class="flex items-center gap-2 mt-3">
                                     <div class="flex">
-                                        <svg
+                                        <StarIcon
                                             v-for="i in 5"
                                             :key="i"
                                             class="w-5 h-5"
                                             :class="i <= product.average_rating ? 'text-yellow-400' : 'text-gray-300'"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
+                                        />
                                     </div>
                                     <span class="text-sm text-gray-600">({{ t('product.reviews', { count: product.reviews_count }) }})</span>
                                 </div>
@@ -277,18 +281,14 @@ const showZoom = ref(false);
                                     v-if="product.in_stock"
                                     class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium"
                                 >
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                    </svg>
+                                    <CheckIcon class="w-4 h-4 mr-1" />
                                     {{ t('product.in_stock') }}
                                 </span>
                                 <span
                                     v-else
                                     class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium"
                                 >
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <XMarkIcon class="w-4 h-4 mr-1" />
                                     {{ product.stock_status?.name || t('product.out_of_stock') }}
                                 </span>
                             </div>
@@ -350,9 +350,7 @@ const showZoom = ref(false);
                                         @click="decreaseQuantity"
                                         class="px-4 py-3 text-gray-600 hover:bg-gray-100 transition-colors"
                                     >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                        </svg>
+                                        <MinusIcon class="w-5 h-5" />
                                     </button>
                                     <input
                                         v-model="quantity"
@@ -364,9 +362,7 @@ const showZoom = ref(false);
                                         @click="increaseQuantity"
                                         class="px-4 py-3 text-gray-600 hover:bg-gray-100 transition-colors"
                                     >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                        </svg>
+                                        <PlusIcon class="w-5 h-5" />
                                     </button>
                                 </div>
 
@@ -377,9 +373,7 @@ const showZoom = ref(false);
                                     class="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold rounded-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                     :style="{ backgroundColor: product.in_stock ? primaryColor : '#9CA3AF' }"
                                 >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
+                                    <ShoppingCartIcon class="w-5 h-5" />
                                     <span>{{ formatPrice(totalPrice) }}</span>
                                 </button>
 
@@ -388,9 +382,7 @@ const showZoom = ref(false);
                                     @click="addToWishlist"
                                     class="p-3 border border-gray-300 rounded-lg text-gray-600 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors"
                                 >
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
+                                    <HeartIcon class="w-6 h-6" />
                                 </button>
                             </div>
 
@@ -496,7 +488,7 @@ const showZoom = ref(false);
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                         <button @click="navigator.clipboard.writeText(window.location.href)" class="w-10 h-10 bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <ClipboardIcon class="w-5 h-5" />
                         </button>
                     </div>
                 </div>
@@ -523,9 +515,7 @@ const showZoom = ref(false);
             >
                 <div v-if="showZoom" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" @click="showZoom = false">
                     <button class="absolute top-4 right-4 p-2 text-white hover:bg-white/20 rounded-lg">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <XMarkIcon class="w-8 h-8" />
                     </button>
                     <img
                         v-if="allImages[selectedImage]"

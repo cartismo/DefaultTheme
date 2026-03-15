@@ -4,6 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
 import { useCurrency } from '@/Composables/useCurrency';
 import { useThemeTranslations } from '../Composables/useThemeTranslations';
+import { MagnifyingGlassIcon, XMarkIcon, FaceFrownIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     show: Boolean,
@@ -111,9 +112,7 @@ const clickResult = () => {
                 class="fixed inset-x-4 top-20 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl bg-white rounded-2xl shadow-2xl z-50 overflow-hidden"
             >
                 <form @submit.prevent="submitSearch" class="flex items-center border-b border-gray-200">
-                    <svg class="w-5 h-5 ml-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                    <MagnifyingGlassIcon class="w-5 h-5 ml-4 text-gray-400" />
                     <input
                         ref="searchInput"
                         v-model="searchQuery"
@@ -127,9 +126,7 @@ const clickResult = () => {
                         @click="searchQuery = ''"
                         class="p-2 mr-2 text-gray-400 hover:text-gray-600"
                     >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <XMarkIcon class="w-5 h-5" />
                     </button>
                     <button
                         type="button"
@@ -188,9 +185,7 @@ const clickResult = () => {
                     </div>
 
                     <div v-else-if="searchQuery.length >= 2" class="py-12 text-center">
-                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <FaceFrownIcon class="w-12 h-12 mx-auto text-gray-300 mb-3" />
                         <p class="text-gray-500">{{ t('search.no_results', { query: searchQuery }) }}</p>
                     </div>
 

@@ -5,6 +5,18 @@ import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
 import axios from 'axios';
+import {
+    BookOpenIcon,
+    ShoppingCartIcon,
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    PhotoIcon,
+    MinusIcon,
+    PlusIcon,
+    TrashIcon,
+    ShieldCheckIcon,
+    CreditCardIcon,
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -100,9 +112,7 @@ const clearCart = async () => {
 
                 <!-- Catalog Mode - cart disabled -->
                 <div v-if="catalogMode" class="text-center py-16 bg-white rounded-xl border border-gray-200">
-                    <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                    </svg>
+                    <BookOpenIcon class="w-16 h-16 mx-auto text-gray-300 mb-4" />
                     <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('cart.catalog_mode_title') }}</h3>
                     <p class="text-gray-500 mb-6">{{ t('cart.catalog_mode_text') }}</p>
                     <Link href="/products" class="px-6 py-2 text-white rounded-lg" :style="{ backgroundColor: primaryColor }">
@@ -112,15 +122,11 @@ const clearCart = async () => {
 
                 <!-- Empty Cart -->
                 <div v-else-if="isEmpty" class="text-center py-16 bg-white rounded-xl border border-gray-200">
-                    <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <ShoppingCartIcon class="w-24 h-24 mx-auto text-gray-300 mb-6" />
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ t('cart.empty') }}</h2>
                     <p class="text-gray-500 mb-6">{{ t('cart.empty_text') }}</p>
                     <Link href="/products" class="inline-flex items-center px-6 py-3 text-white rounded-lg font-medium" :style="{ backgroundColor: primaryColor }">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
+                        <ArrowLeftIcon class="w-5 h-5 mr-2" />
                         {{ t('cart.browse_products') }}
                     </Link>
                 </div>
@@ -145,9 +151,7 @@ const clearCart = async () => {
                                     <Link :href="`/product/${item.slug}`" class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                                         <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
                                         <div v-else class="w-full h-full flex items-center justify-center">
-                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
+                                            <PhotoIcon class="w-10 h-10 text-gray-300" />
                                         </div>
                                     </Link>
 
@@ -177,9 +181,7 @@ const clearCart = async () => {
                                                     :disabled="item.quantity <= 1 || isUpdating[item.cart_key]"
                                                     class="p-2 hover:bg-gray-100 disabled:opacity-50"
                                                 >
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                                    </svg>
+                                                    <MinusIcon class="w-4 h-4" />
                                                 </button>
                                                 <span class="px-4 py-2 font-medium">{{ item.quantity }}</span>
                                                 <button
@@ -187,16 +189,12 @@ const clearCart = async () => {
                                                     :disabled="item.quantity >= item.max_quantity || isUpdating[item.cart_key]"
                                                     class="p-2 hover:bg-gray-100 disabled:opacity-50"
                                                 >
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                                    </svg>
+                                                    <PlusIcon class="w-4 h-4" />
                                                 </button>
                                             </div>
 
                                             <button @click="removeItem(item.cart_key)" :disabled="isRemoving[item.cart_key]" class="text-red-600 hover:text-red-700">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
+                                                <TrashIcon class="w-5 h-5" />
                                             </button>
                                         </div>
                                     </div>
@@ -208,9 +206,7 @@ const clearCart = async () => {
                                             :disabled="item.quantity <= 1 || isUpdating[item.cart_key]"
                                             class="p-2 hover:bg-gray-100 disabled:opacity-50"
                                         >
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                            </svg>
+                                            <MinusIcon class="w-4 h-4" />
                                         </button>
                                         <span class="px-4 py-2 font-medium min-w-[3rem] text-center">{{ item.quantity }}</span>
                                         <button
@@ -218,9 +214,7 @@ const clearCart = async () => {
                                             :disabled="item.quantity >= item.max_quantity || isUpdating[item.cart_key]"
                                             class="p-2 hover:bg-gray-100 disabled:opacity-50"
                                         >
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                            </svg>
+                                            <PlusIcon class="w-4 h-4" />
                                         </button>
                                     </div>
 
@@ -237,9 +231,7 @@ const clearCart = async () => {
 
                         <!-- Continue Shopping -->
                         <Link href="/products" class="inline-flex items-center mt-6 text-gray-600 hover:text-gray-900">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
+                            <ArrowLeftIcon class="w-5 h-5 mr-2" />
                             {{ t('cart.continue_shopping') }}
                         </Link>
                     </div>
@@ -284,9 +276,7 @@ const clearCart = async () => {
                                 class="w-full mt-6 flex items-center justify-center px-6 py-3 text-white rounded-lg font-medium transition-colors"
                                 :style="{ backgroundColor: primaryColor }"
                             >
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
+                                <ArrowRightIcon class="w-5 h-5 mr-2" />
                                 {{ t('cart.proceed_checkout') }}
                             </Link>
 
@@ -310,15 +300,11 @@ const clearCart = async () => {
                             <div class="mt-6 pt-6 border-t border-gray-200">
                                 <div class="grid grid-cols-2 gap-4 text-center text-sm text-gray-600">
                                     <div>
-                                        <svg class="w-8 h-8 mx-auto mb-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                        </svg>
+                                        <ShieldCheckIcon class="w-8 h-8 mx-auto mb-1 text-green-600" />
                                         {{ t('cart.secure_payment') }}
                                     </div>
                                     <div>
-                                        <svg class="w-8 h-8 mx-auto mb-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                        </svg>
+                                        <CreditCardIcon class="w-8 h-8 mx-auto mb-1 text-green-600" />
                                         {{ t('cart.various_methods') }}
                                     </div>
                                 </div>

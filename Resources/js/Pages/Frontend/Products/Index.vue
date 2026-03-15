@@ -5,6 +5,7 @@ import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import ProductCard from '../../../Components/ProductCard.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
+import { FunnelIcon, Squares2X2Icon, Bars3Icon, XMarkIcon, FaceFrownIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -222,9 +223,7 @@ const hasActiveFilters = computed(() => {
                                     @click="showFilters = true"
                                     class="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                                 >
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                    </svg>
+                                    <FunnelIcon class="w-5 h-5 mr-2" />
                                     {{ t('listing.filters') }}
                                 </button>
 
@@ -249,18 +248,14 @@ const hasActiveFilters = computed(() => {
                                         class="p-2 transition-colors"
                                         :class="viewMode === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600'"
                                     >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                        </svg>
+                                        <Squares2X2Icon class="w-5 h-5" />
                                     </button>
                                     <button
                                         @click="viewMode = 'list'"
                                         class="p-2 transition-colors"
                                         :class="viewMode === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-400 hover:text-gray-600'"
                                     >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                                        </svg>
+                                        <Bars3Icon class="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -274,9 +269,7 @@ const hasActiveFilters = computed(() => {
                             >
                                 "{{ currentFilters.q }}"
                                 <button @click="localFilters.q = null; applyFilters()" class="ml-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <XMarkIcon class="w-4 h-4" />
                                 </button>
                             </span>
                             <span
@@ -285,9 +278,7 @@ const hasActiveFilters = computed(() => {
                             >
                                 {{ t('listing.in_stock_tag') }}
                                 <button @click="localFilters.in_stock = false; applyFilters()" class="ml-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <XMarkIcon class="w-4 h-4" />
                                 </button>
                             </span>
                             <span
@@ -296,9 +287,7 @@ const hasActiveFilters = computed(() => {
                             >
                                 {{ t('listing.on_sale_tag') }}
                                 <button @click="localFilters.sale = false; applyFilters()" class="ml-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <XMarkIcon class="w-4 h-4" />
                                 </button>
                             </span>
                         </div>
@@ -328,9 +317,7 @@ const hasActiveFilters = computed(() => {
 
                         <!-- No Products -->
                         <div v-else class="text-center py-16 bg-white rounded-xl border border-gray-200">
-                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <FaceFrownIcon class="w-16 h-16 mx-auto text-gray-300 mb-4" />
                             <h3 class="text-lg font-medium text-gray-900 mb-2">{{ t('listing.no_products') }}</h3>
                             <p class="text-gray-500 mb-6">{{ t('listing.no_products_text') }}</p>
                             <button
@@ -372,9 +359,7 @@ const hasActiveFilters = computed(() => {
                     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-900">{{ t('listing.filters') }}</h3>
                         <button @click="showFilters = false" class="p-2 text-gray-400 hover:text-gray-600">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <XMarkIcon class="w-5 h-5" />
                         </button>
                     </div>
 

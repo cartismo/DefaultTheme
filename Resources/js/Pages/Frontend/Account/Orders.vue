@@ -5,6 +5,7 @@ import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import { ShoppingBagIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -127,9 +128,7 @@ const menuItems = computed(() => [
                             </div>
 
                             <div v-else class="p-8 text-center">
-                                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
+                                <ShoppingBagIcon class="w-16 h-16 mx-auto text-gray-300 mb-4" />
                                 <p class="text-gray-500 mb-4">{{ t('account.no_orders') }}</p>
                                 <Link href="/products" class="inline-flex items-center px-4 py-2 text-white rounded-lg font-medium" :style="{ backgroundColor: primaryColor }">
                                     {{ t('account.start_shopping') }}

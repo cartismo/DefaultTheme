@@ -6,6 +6,18 @@ import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import VueSelect from '@/Components/VueSelect.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import {
+    UserIcon,
+    CheckIcon,
+    PlusIcon,
+    BuildingOfficeIcon,
+    HomeIcon,
+    TruckIcon,
+    CpuChipIcon,
+    BanknotesIcon,
+    BuildingLibraryIcon,
+    CreditCardIcon,
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -530,9 +542,7 @@ onMounted(() => {
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
+                                            <UserIcon class="w-5 h-5 text-gray-500" />
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ t('checkout.have_account') }}</p>
@@ -552,9 +562,7 @@ onMounted(() => {
                             <div v-else class="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor + '20' }">
-                                        <svg class="w-5 h-5" :style="{ color: primaryColor }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <CheckIcon class="w-5 h-5" :style="{ color: primaryColor }" />
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">{{ customer.name }}</p>
@@ -683,9 +691,7 @@ onMounted(() => {
                                                     class="sr-only"
                                                 />
                                                 <div class="flex items-center gap-2">
-                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                                    </svg>
+                                                    <PlusIcon class="w-5 h-5 text-gray-400" />
                                                     <span class="text-gray-600">{{ t('checkout.new_billing') }}</span>
                                                 </div>
                                             </label>
@@ -702,9 +708,7 @@ onMounted(() => {
                                                 :style="form.invoice.type === 'company' ? { borderColor: primaryColor } : {}"
                                             >
                                                 <input type="radio" v-model="form.invoice.type" value="company" class="sr-only" />
-                                                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                                </svg>
+                                                <BuildingOfficeIcon class="w-5 h-5 mr-2 text-gray-500" />
                                                 <span class="font-medium">{{ t('checkout.company') }}</span>
                                             </label>
                                             <label
@@ -713,9 +717,7 @@ onMounted(() => {
                                                 :style="form.invoice.type === 'personal' ? { borderColor: primaryColor } : {}"
                                             >
                                                 <input type="radio" v-model="form.invoice.type" value="personal" class="sr-only" />
-                                                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                </svg>
+                                                <UserIcon class="w-5 h-5 mr-2 text-gray-500" />
                                                 <span class="font-medium">{{ t('checkout.individual') }}</span>
                                             </label>
                                         </div>
@@ -826,9 +828,7 @@ onMounted(() => {
                                                 :style="{ color: method.primary_color || '#374151' }"
                                                 v-html="method.logo_svg"
                                             ></span>
-                                            <svg v-else class="w-7 h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4zm-2-4V8a1 1 0 00-1-1H5a1 1 0 00-1 1v5m12 0H4m12 0h1a2 2 0 012 2v1m0-3l-3-3h-3m4 0V8a2 2 0 012 2v3z" />
-                                            </svg>
+                                            <TruckIcon v-else class="w-7 h-7 text-gray-600" />
                                         </div>
 
                                         <!-- Method Info -->
@@ -845,15 +845,9 @@ onMounted(() => {
                                                             :key="type"
                                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600"
                                                         >
-                                                            <svg v-if="type === 'office'" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                                            </svg>
-                                                            <svg v-else-if="type === 'apt'" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                                                            </svg>
-                                                            <svg v-else-if="type === 'address'" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                                            </svg>
+                                                            <BuildingOfficeIcon v-if="type === 'office'" class="w-3 h-3 mr-1" />
+                                                            <CpuChipIcon v-else-if="type === 'apt'" class="w-3 h-3 mr-1" />
+                                                            <HomeIcon v-else-if="type === 'address'" class="w-3 h-3 mr-1" />
                                                             {{ type === 'office' ? t('checkout.delivery_office') : type === 'apt' ? t('checkout.delivery_apt') : t('checkout.delivery_address') }}
                                                         </span>
                                                     </div>
@@ -893,9 +887,7 @@ onMounted(() => {
                                             class="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
                                             :style="{ backgroundColor: primaryColor }"
                                         >
-                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                                            </svg>
+                                            <CheckIcon class="w-3 h-3 text-white" />
                                         </div>
                                     </label>
                                 </div>
@@ -1057,15 +1049,9 @@ onMounted(() => {
                                     />
                                     <!-- Payment Icon -->
                                     <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mr-4" :style="form.payment_method_id === method.id ? { backgroundColor: primaryColor + '20' } : {}">
-                                        <svg v-if="method.icon === 'banknotes'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        <svg v-else-if="method.icon === 'building-library'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-                                        </svg>
-                                        <svg v-else class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                        </svg>
+                                        <BanknotesIcon v-if="method.icon === 'banknotes'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" />
+                                        <BuildingLibraryIcon v-else-if="method.icon === 'building-library'" class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" />
+                                        <CreditCardIcon v-else class="w-5 h-5" :style="{ color: form.payment_method_id === method.id ? primaryColor : '#6B7280' }" />
                                     </div>
                                     <div class="flex-1">
                                         <span class="font-medium text-gray-900">{{ method.name }}</span>
@@ -1074,9 +1060,7 @@ onMounted(() => {
                                     </div>
                                     <!-- Checkmark -->
                                     <div v-if="form.payment_method_id === method.id" class="w-6 h-6 rounded-full flex items-center justify-center" :style="{ backgroundColor: primaryColor }">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <CheckIcon class="w-4 h-4 text-white" />
                                     </div>
                                 </label>
                             </div>

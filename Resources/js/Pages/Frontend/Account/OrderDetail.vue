@@ -4,6 +4,7 @@ import { Link } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     settings: Object,
@@ -21,9 +22,7 @@ const primaryColor = computed(() => props.settings?.colors?.primary || '#4334db'
             <div class="max-w-4xl mx-auto px-4">
                 <!-- Back Link -->
                 <Link href="/account/orders" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
+                    <ArrowLeftIcon class="w-5 h-5 mr-2" />
                     {{ t('account.back_to_orders') }}
                 </Link>
 
