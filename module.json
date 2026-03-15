@@ -8,7 +8,7 @@
         "Modules\\DefaultTheme\\Providers\\DefaultThemeServiceProvider"
     ],
     "files": [],
-    "type": "themes",
+    "type": "theme",
     "version": "1.0.0",
     "author": "Cartismo",
     "is_core": true,
