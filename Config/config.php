@@ -11,7 +11,7 @@ return [
     'description' => 'The default Cartismo storefront theme. Clean, fast, and fully responsive.',
     'version' => '1.0.0',
     'author' => 'Cartismo',
-    'type' => 'themes',
+    'type' => 'theme',
     'is_core' => true,
 
     /*

@@ -12,7 +12,7 @@ use Modules\DefaultTheme\Http\Controllers\Admin\SettingsController;
 |
 */
 
-Route::prefix('modules/themes/default-theme')->name('admin.themes.default.')->group(function () {
+Route::prefix('modules/themes/default-theme')->name('admin.themes.default-theme.')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 });

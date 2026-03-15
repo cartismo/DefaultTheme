@@ -50,7 +50,7 @@ const submit = () => {
     if (!storeTabsRef.value) return;
 
     saving.value = true;
-    router.put(route('admin.themes.default.settings.update'), {
+    router.put(route('admin.themes.default-theme.settings.update'), {
         store_id: storeTabsRef.value.activeStoreId,
         is_enabled: storeTabsRef.value.isEnabled,
         settings: storeTabsRef.value.localSettings,
