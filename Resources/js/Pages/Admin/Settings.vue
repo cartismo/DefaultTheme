@@ -29,23 +29,32 @@ const props = defineProps({
     storeSettings: Object,
     defaultSettings: Object,
     sliders: Array,
+    translations: Object,
 });
 
 const { confirm } = useConfirmDialog();
 const storeTabsRef = ref(null);
 const saving = ref(false);
 
+const t = (key, replacements = {}) => {
+    let text = props.translations?.[key] || key;
+    Object.entries(replacements).forEach(([k, v]) => {
+        text = text.replace(`:${k}`, v);
+    });
+    return text;
+};
+
 const activeSection = ref('layout');
 
 const sections = [
-    { id: 'layout', name: 'Layout', icon: Squares2X2Icon, color: 'from-violet-500 to-purple-600' },
-    { id: 'colors', name: 'Colors', icon: SwatchIcon, color: 'from-pink-500 to-rose-600' },
-    { id: 'homepage', name: 'Homepage', icon: HomeIcon, color: 'from-blue-500 to-indigo-600' },
-    { id: 'product_listing', name: 'Product Listing', icon: RectangleStackIcon, color: 'from-emerald-500 to-teal-600' },
-    { id: 'product_page', name: 'Product Page', icon: ShoppingBagIcon, color: 'from-amber-500 to-orange-600' },
-    { id: 'cart', name: 'Cart', icon: ShoppingCartIcon, color: 'from-cyan-500 to-blue-600' },
-    { id: 'header', name: 'Header', icon: Bars3Icon, color: 'from-slate-500 to-gray-600' },
-    { id: 'footer', name: 'Footer', icon: Bars3Icon, color: 'from-stone-500 to-neutral-600' },
+    { id: 'layout', name: t('layout'), icon: Squares2X2Icon, color: 'from-violet-500 to-purple-600' },
+    { id: 'colors', name: t('colors'), icon: SwatchIcon, color: 'from-pink-500 to-rose-600' },
+    { id: 'homepage', name: t('homepage'), icon: HomeIcon, color: 'from-blue-500 to-indigo-600' },
+    { id: 'product_listing', name: t('product_listing'), icon: RectangleStackIcon, color: 'from-emerald-500 to-teal-600' },
+    { id: 'product_page', name: t('product_page'), icon: ShoppingBagIcon, color: 'from-amber-500 to-orange-600' },
+    { id: 'cart', name: t('cart_settings'), icon: ShoppingCartIcon, color: 'from-cyan-500 to-blue-600' },
+    { id: 'header', name: t('header'), icon: Bars3Icon, color: 'from-slate-500 to-gray-600' },
+    { id: 'footer', name: t('footer'), icon: Bars3Icon, color: 'from-stone-500 to-neutral-600' },
 ];
 
 const submit = () => {
@@ -66,8 +75,8 @@ const submit = () => {
 
 const resetSection = async (sectionId, settings, updateSetting) => {
     const confirmed = await confirm({
-        title: 'Reset',
-        message: `Reset ${sectionId.replace('_', ' ')} settings to defaults?`,
+        title: t('reset'),
+        message: t('reset_confirm'),
         variant: 'warning',
     });
     if (confirmed && props.defaultSettings[sectionId]) {
@@ -78,8 +87,8 @@ const resetSection = async (sectionId, settings, updateSetting) => {
 
 const resetAll = async (updateSetting) => {
     const confirmed = await confirm({
-        title: 'Reset',
-        message: 'Reset all theme settings to defaults?',
+        title: t('reset'),
+        message: t('reset_confirm'),
         variant: 'warning',
     });
     if (confirmed) {

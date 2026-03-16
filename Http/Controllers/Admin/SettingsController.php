@@ -38,6 +38,9 @@ class SettingsController extends Controller
             ? Slider::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug', 'location'])
             : [];
 
+        $translations = __('defaulttheme::admin');
+        $data['translations'] = is_array($translations) ? ($translations['settings'] ?? []) : [];
+
         return Inertia::render('DefaultTheme::Admin/Settings', $data);
     }
 
