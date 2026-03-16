@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+import { useConfirmDialog } from '@/Composables/useConfirmDialog.js';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import StoreSettingsTabs from '@/Components/Admin/StoreSettingsTabs.vue';
 import {
@@ -30,6 +31,7 @@ const props = defineProps({
     sliders: Array,
 });
 
+const { confirm } = useConfirmDialog();
 const storeTabsRef = ref(null);
 const saving = ref(false);
 
@@ -62,17 +64,25 @@ const submit = () => {
     });
 };
 
-const resetSection = (sectionId, settings, updateSetting) => {
-    if (confirm(`Reset ${sectionId.replace('_', ' ')} settings to defaults?`)) {
-        if (props.defaultSettings[sectionId]) {
-            const defaultSectionSettings = JSON.parse(JSON.stringify(props.defaultSettings[sectionId]));
-            updateSetting(sectionId, defaultSectionSettings);
-        }
+const resetSection = async (sectionId, settings, updateSetting) => {
+    const confirmed = await confirm({
+        title: 'Reset',
+        message: `Reset ${sectionId.replace('_', ' ')} settings to defaults?`,
+        variant: 'warning',
+    });
+    if (confirmed && props.defaultSettings[sectionId]) {
+        const defaultSectionSettings = JSON.parse(JSON.stringify(props.defaultSettings[sectionId]));
+        updateSetting(sectionId, defaultSectionSettings);
     }
 };
 
-const resetAll = (updateSetting) => {
-    if (confirm('Reset all theme settings to defaults?')) {
+const resetAll = async (updateSetting) => {
+    const confirmed = await confirm({
+        title: 'Reset',
+        message: 'Reset all theme settings to defaults?',
+        variant: 'warning',
+    });
+    if (confirmed) {
         Object.keys(props.defaultSettings).forEach(key => {
             updateSetting(key, JSON.parse(JSON.stringify(props.defaultSettings[key])));
         });

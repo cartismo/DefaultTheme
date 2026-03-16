@@ -4,6 +4,7 @@ import { Link, router, usePage } from '@inertiajs/vue3';
 import StorefrontLayout from '@theme/Layouts/StorefrontLayout.vue';
 import { useThemeTranslations } from '../../../Composables/useThemeTranslations';
 import { useCurrency } from '@/Composables/useCurrency';
+import { useConfirmDialog } from '@/Composables/useConfirmDialog.js';
 import axios from 'axios';
 import {
     BookOpenIcon,
@@ -25,6 +26,7 @@ const props = defineProps({
 
 const { t } = useThemeTranslations();
 const { formatPrice } = useCurrency();
+const { confirm } = useConfirmDialog();
 
 // Local cart state for optimistic updates
 const localCart = ref({ ...props.cart });
@@ -83,7 +85,12 @@ const removeItem = async (cartKey) => {
 
 // Clear cart
 const clearCart = async () => {
-    if (!confirm(t('cart.clear_confirm'))) return;
+    const confirmed = await confirm({
+        title: t('cart.clear_title'),
+        message: t('cart.clear_confirm'),
+        variant: 'warning',
+    });
+    if (!confirmed) return;
 
     try {
         const response = await axios.post('/cart/clear');

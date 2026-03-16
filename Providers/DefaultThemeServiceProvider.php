@@ -80,7 +80,7 @@ class DefaultThemeServiceProvider extends ServiceProvider
      */
     protected function shareThemeTranslations(): void
     {
-        Inertia::share('themeTranslations', fn () => trans($this->moduleNameLower . '::theme'));
+        Inertia::share('themeTranslations', fn () => __($this->moduleNameLower . '::theme'));
     }
 
     public function provides(): array
