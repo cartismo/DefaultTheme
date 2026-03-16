@@ -119,47 +119,47 @@ const currentSectionConfig = computed(() => {
 
 // Layout options
 const headerStyles = [
-    { value: 'default', label: 'Default', desc: 'Logo left, navigation right' },
-    { value: 'centered', label: 'Centered', desc: 'Centered logo with navigation below' },
-    { value: 'minimal', label: 'Minimal', desc: 'Clean, simple header' },
+    { value: 'default', label: t('header_default'), desc: t('header_default_desc') },
+    { value: 'centered', label: t('header_centered'), desc: t('header_centered_desc') },
+    { value: 'minimal', label: t('header_minimal'), desc: t('header_minimal_desc_short') },
 ];
 
 const footerStyles = [
-    { value: 'default', label: 'Default', desc: 'Standard multi-column layout' },
-    { value: 'minimal', label: 'Minimal', desc: 'Simple single-row footer' },
-    { value: 'expanded', label: 'Expanded', desc: 'Full-featured with widgets' },
+    { value: 'default', label: t('footer_default'), desc: t('footer_default_desc_short') },
+    { value: 'minimal', label: t('footer_minimal'), desc: t('footer_minimal_desc_short') },
+    { value: 'expanded', label: t('footer_expanded'), desc: t('footer_expanded_desc_short') },
 ];
 
 const sidebarPositions = [
-    { value: 'left', label: 'Left' },
-    { value: 'right', label: 'Right' },
-    { value: 'none', label: 'Hidden' },
+    { value: 'left', label: t('sidebar_left') },
+    { value: 'right', label: t('sidebar_right') },
+    { value: 'none', label: t('sidebar_hidden') },
 ];
 
 const containerWidths = [
-    { value: 'default', label: 'Default (1280px)' },
-    { value: 'wide', label: 'Wide (1440px)' },
-    { value: 'full', label: 'Full Width' },
+    { value: 'default', label: t('container_default_label') },
+    { value: 'wide', label: t('container_wide_label') },
+    { value: 'full', label: t('container_full') },
 ];
 
 const galleryStyles = [
-    { value: 'thumbnails', label: 'Thumbnails', desc: 'Small images below main' },
-    { value: 'dots', label: 'Dots', desc: 'Simple dot indicators' },
-    { value: 'vertical', label: 'Vertical', desc: 'Thumbnails on the side' },
+    { value: 'thumbnails', label: t('gallery_thumbnails'), desc: t('gallery_thumbnails_desc') },
+    { value: 'dots', label: t('gallery_dots'), desc: t('gallery_dots_desc') },
+    { value: 'vertical', label: t('gallery_vertical'), desc: t('gallery_vertical_desc') },
 ];
 
 const viewModes = [
-    { value: 'grid', label: 'Grid View' },
-    { value: 'list', label: 'List View' },
+    { value: 'grid', label: t('grid_view') },
+    { value: 'list', label: t('list_view') },
 ];
 
 // Predefined color palettes
 const colorPresets = [
-    { name: 'Default', primary: '#4334db', secondary: '#5d5bf1', accent: '#F59E0B' },
-    { name: 'Ocean', primary: '#0891B2', secondary: '#64748B', accent: '#14B8A6' },
-    { name: 'Forest', primary: '#059669', secondary: '#4B5563', accent: '#84CC16' },
-    { name: 'Sunset', primary: '#DC2626', secondary: '#78716C', accent: '#F97316' },
-    { name: 'Berry', primary: '#9333EA', secondary: '#6B7280', accent: '#EC4899' },
+    { name: t('preset_default'), primary: '#4334db', secondary: '#5d5bf1', accent: '#F59E0B' },
+    { name: t('preset_ocean'), primary: '#0891B2', secondary: '#64748B', accent: '#14B8A6' },
+    { name: t('preset_forest'), primary: '#059669', secondary: '#4B5563', accent: '#84CC16' },
+    { name: t('preset_sunset'), primary: '#DC2626', secondary: '#78716C', accent: '#F97316' },
+    { name: t('preset_berry'), primary: '#9333EA', secondary: '#6B7280', accent: '#EC4899' },
 ];
 
 const applyColorPreset = (preset, updateSetting) => {
@@ -170,7 +170,7 @@ const applyColorPreset = (preset, updateSetting) => {
 </script>
 
 <template>
-    <AdminLayout :title="`${module.name} Settings`">
+    <AdminLayout :title="`${module.name} ${t('section_settings', { section: '' }).trim()}`">
         <template #header>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -186,14 +186,14 @@ const applyColorPreset = (preset, updateSetting) => {
                         </div>
                         <div>
                             <h1 class="text-xl font-bold text-gray-900">{{ module.name }}</h1>
-                            <p class="text-sm text-gray-500">Theme Customization</p>
+                            <p class="text-sm text-gray-500">{{ t('title') }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
                     <span v-if="hasChanges" class="flex items-center text-sm text-amber-600 font-medium">
                         <span class="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></span>
-                        Unsaved changes
+                        {{ t('unsaved') }}
                     </span>
                     <button
                         type="submit"
@@ -202,7 +202,7 @@ const applyColorPreset = (preset, updateSetting) => {
                         class="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl hover:from-violet-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25"
                     >
                         <CheckIcon class="w-4 h-4 inline mr-2" />
-                        Save Changes
+                        {{ saving ? t('saving') : t('save') }}
                     </button>
                 </div>
             </div>
@@ -246,21 +246,21 @@ const applyColorPreset = (preset, updateSetting) => {
                             <!-- Theme Info Card -->
                             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                 <div class="p-4 border-b border-gray-100">
-                                    <h3 class="font-semibold text-gray-900 text-sm">Theme Info</h3>
+                                    <h3 class="font-semibold text-gray-900 text-sm">{{ t('theme_info') }}</h3>
                                 </div>
                                 <div class="p-4 space-y-3">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500">Status</span>
+                                        <span class="text-xs text-gray-500">{{ t('status') }}</span>
                                         <span class="bg-green-100 text-green-700 px-2 py-0.5 text-xs font-semibold rounded-full">
-                                            Active
+                                            {{ t('active') }}
                                         </span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500">Version</span>
+                                        <span class="text-xs text-gray-500">{{ t('version') }}</span>
                                         <span class="text-xs font-mono text-gray-900">v{{ module.installed_version }}</span>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500">Author</span>
+                                        <span class="text-xs text-gray-500">{{ t('author') }}</span>
                                         <span class="text-xs text-gray-900">{{ module.author }}</span>
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div class="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-lg p-4 text-white">
                                 <div class="flex items-center space-x-2 mb-3">
                                     <SwatchIcon class="w-5 h-5 opacity-80" />
-                                    <span class="text-sm font-medium">Color Palette</span>
+                                    <span class="text-sm font-medium">{{ t('color_palette') }}</span>
                                 </div>
                                 <div class="flex space-x-2">
                                     <div
@@ -288,9 +288,9 @@ const applyColorPreset = (preset, updateSetting) => {
                                 <div class="flex items-start space-x-2">
                                     <InformationCircleIcon class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                                     <div>
-                                        <h4 class="text-xs font-medium text-blue-900">Tips</h4>
+                                        <h4 class="text-xs font-medium text-blue-900">{{ t('tips') }}</h4>
                                         <p class="text-xs text-blue-700 mt-1">
-                                            Changes are previewed live. Don't forget to save!
+                                            {{ t('tips_message') }}
                                         </p>
                                     </div>
                                 </div>
@@ -307,8 +307,8 @@ const applyColorPreset = (preset, updateSetting) => {
                                             <component :is="currentSectionConfig.icon" class="w-6 h-6 text-white" />
                                         </div>
                                         <div>
-                                            <h2 class="text-lg font-bold text-gray-900">{{ currentSectionConfig.name }} Settings</h2>
-                                            <p class="text-sm text-gray-500">Customize how your {{ currentSectionConfig.name.toLowerCase() }} looks and behaves</p>
+                                            <h2 class="text-lg font-bold text-gray-900">{{ t('section_settings', { section: currentSectionConfig.name }) }}</h2>
+                                            <p class="text-sm text-gray-500">{{ t('section_customize_desc', { section: currentSectionConfig.name.toLowerCase() }) }}</p>
                                         </div>
                                     </div>
                                     <button
@@ -317,7 +317,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                         class="text-sm text-gray-500 hover:text-gray-700 font-medium"
                                     >
                                         <ArrowPathIcon class="w-4 h-4 inline mr-1" />
-                                        Reset Section
+                                        {{ t('reset_section') }}
                                     </button>
                                 </div>
                             </div>
@@ -327,7 +327,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                 <!-- Layout Style Cards -->
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Header Style</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('header_style') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-3 gap-4">
@@ -364,7 +364,7 @@ const applyColorPreset = (preset, updateSetting) => {
 
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Footer Style</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('footer_style') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-3 gap-4">
@@ -401,7 +401,7 @@ const applyColorPreset = (preset, updateSetting) => {
 
                                 <div class="grid grid-cols-2 gap-6">
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Sidebar Position</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('sidebar_position') }}</label>
                                         <div class="flex space-x-2">
                                             <button
                                                 v-for="option in sidebarPositions"
@@ -419,7 +419,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                     </div>
 
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Container Width</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('container_width') }}</label>
                                         <select
                                             :value="settings.layout.container_width"
                                             @change="updateSetting('layout', { ...settings.layout, container_width: $event.target.value })"
@@ -440,7 +440,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                                         <div class="flex items-center space-x-2">
                                             <SparklesIcon class="w-5 h-5 text-gray-400" />
-                                            <h3 class="font-semibold text-gray-900">Color Presets</h3>
+                                            <h3 class="font-semibold text-gray-900">{{ t('color_presets') }}</h3>
                                         </div>
                                     </div>
                                     <div class="p-6">
@@ -466,13 +466,13 @@ const applyColorPreset = (preset, updateSetting) => {
                                 <!-- Individual Colors -->
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Custom Colors</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('custom_colors') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-3 gap-6">
                                             <div v-for="(color, key) in settings.colors" :key="key" class="space-y-3">
                                                 <label class="block text-sm font-medium text-gray-700 capitalize">
-                                                    {{ key.replace('_', ' ') }} Color
+                                                    {{ t(key + '_color') }}
                                                 </label>
                                                 <div class="flex items-center space-x-3">
                                                     <div class="relative">
@@ -502,7 +502,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                                         <div class="flex items-center space-x-2">
                                             <EyeIcon class="w-5 h-5 text-gray-400" />
-                                            <h3 class="font-semibold text-gray-900">Live Preview</h3>
+                                            <h3 class="font-semibold text-gray-900">{{ t('live_preview') }}</h3>
                                         </div>
                                     </div>
                                     <div class="p-6">
@@ -513,29 +513,29 @@ const applyColorPreset = (preset, updateSetting) => {
                                                     class="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
                                                     :style="{ backgroundColor: settings.colors.primary }"
                                                 >
-                                                    Primary Button
+                                                    {{ t('primary_button') }}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     class="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
                                                     :style="{ backgroundColor: settings.colors.secondary }"
                                                 >
-                                                    Secondary
+                                                    {{ t('secondary_button') }}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     class="px-6 py-2.5 rounded-lg text-white font-medium text-sm shadow-lg"
                                                     :style="{ backgroundColor: settings.colors.accent }"
                                                 >
-                                                    Accent
+                                                    {{ t('accent_button') }}
                                                 </button>
                                             </div>
                                             <div class="flex items-center space-x-2">
-                                                <span class="font-medium" :style="{ color: settings.colors.primary }">Primary Text</span>
+                                                <span class="font-medium" :style="{ color: settings.colors.primary }">{{ t('primary_text') }}</span>
                                                 <span class="text-gray-400">|</span>
-                                                <span class="font-medium" :style="{ color: settings.colors.secondary }">Secondary Text</span>
+                                                <span class="font-medium" :style="{ color: settings.colors.secondary }">{{ t('secondary_text') }}</span>
                                                 <span class="text-gray-400">|</span>
-                                                <span class="font-medium" :style="{ color: settings.colors.accent }">Accent Text</span>
+                                                <span class="font-medium" :style="{ color: settings.colors.accent }">{{ t('accent_text') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -546,20 +546,20 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'homepage'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Homepage Sections</h3>
-                                        <p class="text-sm text-gray-500 mt-1">Toggle which sections appear on your homepage</p>
+                                        <h3 class="font-semibold text-gray-900">{{ t('homepage_sections') }}</h3>
+                                        <p class="text-sm text-gray-500 mt-1">{{ t('homepage_sections_desc') }}</p>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_slider: 'Hero Slider',
-                                                    show_featured_categories: 'Featured Categories',
-                                                    show_featured_products: 'Featured Products',
-                                                    show_new_arrivals: 'New Arrivals',
-                                                    show_bestsellers: 'Bestsellers',
-                                                    show_brands: 'Brand Logos',
-                                                    show_newsletter: 'Newsletter Signup'
+                                                    show_slider: t('toggle_hero_slider'),
+                                                    show_featured_categories: t('toggle_featured_categories'),
+                                                    show_featured_products: t('toggle_featured_products'),
+                                                    show_new_arrivals: t('toggle_new_arrivals'),
+                                                    show_bestsellers: t('toggle_bestsellers'),
+                                                    show_brands: t('toggle_brands'),
+                                                    show_newsletter: t('toggle_newsletter')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
@@ -595,42 +595,42 @@ const applyColorPreset = (preset, updateSetting) => {
                                     <div class="px-6 py-4 bg-gradient-to-r from-pink-50 to-rose-50 border-b border-pink-100">
                                         <div class="flex items-center space-x-2">
                                             <RectangleStackIcon class="w-5 h-5 text-pink-500" />
-                                            <h3 class="font-semibold text-gray-900">Slider Selection</h3>
+                                            <h3 class="font-semibold text-gray-900">{{ t('slider_selection') }}</h3>
                                         </div>
-                                        <p class="text-sm text-gray-500 mt-1">Choose which sliders to display in different sections</p>
+                                        <p class="text-sm text-gray-500 mt-1">{{ t('slider_selection_desc') }}</p>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 gap-6">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Hero Slider</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('hero_slider') }}</label>
                                                 <select
                                                     :value="settings.homepage.hero_slider_id"
                                                     @change="updateSetting('homepage', { ...settings.homepage, hero_slider_id: $event.target.value ? Number($event.target.value) : null })"
                                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
                                                 >
-                                                    <option :value="null">No slider selected</option>
+                                                    <option :value="null">{{ t('no_slider_selected') }}</option>
                                                     <option v-for="slider in sliders" :key="slider.id" :value="slider.id">
                                                         {{ slider.name }}
                                                         <template v-if="slider.location"> ({{ slider.location }})</template>
                                                     </option>
                                                 </select>
-                                                <p class="mt-1 text-xs text-gray-500">Main slider at the top of homepage</p>
+                                                <p class="mt-1 text-xs text-gray-500">{{ t('hero_slider_desc') }}</p>
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Banner Slider</label>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('banner_slider') }}</label>
                                                 <select
                                                     :value="settings.homepage.banner_slider_id"
                                                     @change="updateSetting('homepage', { ...settings.homepage, banner_slider_id: $event.target.value ? Number($event.target.value) : null })"
                                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
                                                 >
-                                                    <option :value="null">No slider selected</option>
+                                                    <option :value="null">{{ t('no_slider_selected') }}</option>
                                                     <option v-for="slider in sliders" :key="slider.id" :value="slider.id">
                                                         {{ slider.name }}
                                                         <template v-if="slider.location"> ({{ slider.location }})</template>
                                                     </option>
                                                 </select>
-                                                <p class="mt-1 text-xs text-gray-500">Secondary promotional banner</p>
+                                                <p class="mt-1 text-xs text-gray-500">{{ t('banner_slider_desc') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -641,9 +641,9 @@ const applyColorPreset = (preset, updateSetting) => {
                                     <div class="flex items-start space-x-3">
                                         <RectangleStackIcon class="w-6 h-6 text-pink-400 flex-shrink-0" />
                                         <div>
-                                            <h4 class="font-medium text-pink-900">No Sliders Available</h4>
+                                            <h4 class="font-medium text-pink-900">{{ t('no_sliders_available') }}</h4>
                                             <p class="text-sm text-pink-700 mt-1">
-                                                Install and configure the Simple Slider module to add hero sections and banners.
+                                                {{ t('hero_slider_hint') }}
                                             </p>
                                         </div>
                                     </div>
@@ -651,7 +651,7 @@ const applyColorPreset = (preset, updateSetting) => {
 
                                 <div class="grid grid-cols-2 gap-6">
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Products Per Row</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('products_per_row_label') }}</label>
                                         <div class="flex space-x-2">
                                             <button
                                                 v-for="num in [3, 4, 5, 6]"
@@ -669,7 +669,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                     </div>
 
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Featured Products Limit</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('featured_limit_label') }}</label>
                                         <input
                                             type="number"
                                             :value="settings.homepage.featured_products_limit"
@@ -679,7 +679,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                             step="4"
                                             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         />
-                                        <p class="mt-2 text-xs text-gray-500">Number of products shown (4-24)</p>
+                                        <p class="mt-2 text-xs text-gray-500">{{ t('featured_limit_desc') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -688,7 +688,7 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'product_listing'" class="space-y-6">
                                 <div class="grid grid-cols-2 gap-6">
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Default View Mode</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('default_view') }}</label>
                                         <div class="flex space-x-2">
                                             <button
                                                 v-for="option in viewModes"
@@ -706,7 +706,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                     </div>
 
                                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                        <label class="block text-sm font-medium text-gray-700 mb-3">Products Per Page</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('products_per_page') }}</label>
                                         <div class="flex space-x-2">
                                             <button
                                                 v-for="num in [12, 24, 36, 48]"
@@ -726,17 +726,17 @@ const applyColorPreset = (preset, updateSetting) => {
 
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Product Card Features</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('product_card_features') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_filters: 'Filter Sidebar',
-                                                    show_sorting: 'Sort Options',
-                                                    show_compare: 'Compare Button',
-                                                    show_wishlist: 'Wishlist Button',
-                                                    show_quick_view: 'Quick View'
+                                                    show_filters: t('toggle_filters'),
+                                                    show_sorting: t('toggle_sorting'),
+                                                    show_compare: t('toggle_compare'),
+                                                    show_wishlist: t('toggle_wishlist'),
+                                                    show_quick_view: t('toggle_quick_view')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
@@ -772,7 +772,7 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'product_page'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Image Gallery Style</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('image_gallery_style') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-3 gap-4">
@@ -808,7 +808,7 @@ const applyColorPreset = (preset, updateSetting) => {
                                 </div>
 
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">Related Products Limit</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('related_limit') }}</label>
                                     <input
                                         type="number"
                                         :value="settings.product_page.related_products_limit"
@@ -817,22 +817,22 @@ const applyColorPreset = (preset, updateSetting) => {
                                         max="12"
                                         class="w-48 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
                                     />
-                                    <p class="mt-2 text-xs text-gray-500">Number of related products to display</p>
+                                    <p class="mt-2 text-xs text-gray-500">{{ t('related_limit_desc') }}</p>
                                 </div>
 
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Product Page Elements</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('product_page_elements') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_related_products: 'Related Products',
-                                                    show_reviews: 'Customer Reviews',
-                                                    show_stock_status: 'Stock Status',
-                                                    show_sku: 'Product SKU',
-                                                    show_social_share: 'Social Share'
+                                                    show_related_products: t('toggle_related_products'),
+                                                    show_reviews: t('toggle_reviews'),
+                                                    show_stock_status: t('toggle_stock_status'),
+                                                    show_sku: t('toggle_sku'),
+                                                    show_social_share: t('toggle_social_share')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
@@ -868,14 +868,14 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'cart'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Cart Features</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('cart_features') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_mini_cart: 'Mini Cart',
-                                                    show_cart_totals: 'Cart Totals'
+                                                    show_mini_cart: t('toggle_mini_cart'),
+                                                    show_cart_totals: t('toggle_cart_totals')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
@@ -911,20 +911,20 @@ const applyColorPreset = (preset, updateSetting) => {
                             <div v-show="activeSection === 'header'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Header Elements</h3>
-                                        <p class="text-sm text-gray-500 mt-1">Choose what to display in your site header</p>
+                                        <h3 class="font-semibold text-gray-900">{{ t('header_elements') }}</h3>
+                                        <p class="text-sm text-gray-500 mt-1">{{ t('header_elements_desc') }}</p>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_top_bar: 'Top Bar',
-                                                    show_search: 'Search Box',
-                                                    show_account: 'Account Link',
-                                                    show_wishlist: 'Wishlist Icon',
-                                                    show_cart: 'Cart Icon',
-                                                    sticky_header: 'Sticky Header',
-                                                    show_categories_menu: 'Categories Menu'
+                                                    show_top_bar: t('toggle_top_bar'),
+                                                    show_search: t('toggle_search'),
+                                                    show_account: t('toggle_account'),
+                                                    show_wishlist: t('toggle_wishlist_icon'),
+                                                    show_cart: t('toggle_cart_icon'),
+                                                    sticky_header: t('toggle_sticky_header'),
+                                                    show_categories_menu: t('toggle_categories_menu')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
@@ -959,7 +959,7 @@ const applyColorPreset = (preset, updateSetting) => {
                             <!-- Footer Settings -->
                             <div v-show="activeSection === 'footer'" class="space-y-6">
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-3">Footer Columns</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-3">{{ t('footer_columns') }}</label>
                                     <div class="flex space-x-2">
                                         <button
                                             v-for="num in [2, 3, 4, 5]"
@@ -971,22 +971,22 @@ const applyColorPreset = (preset, updateSetting) => {
                                                 ? 'border-stone-500 bg-stone-100 text-stone-700'
                                                 : 'border-gray-200 text-gray-600 hover:border-gray-300'"
                                         >
-                                            {{ num }} Columns
+                                            {{ t('columns_count', { count: num }) }}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                                        <h3 class="font-semibold text-gray-900">Footer Elements</h3>
+                                        <h3 class="font-semibold text-gray-900">{{ t('footer_elements') }}</h3>
                                     </div>
                                     <div class="p-6">
                                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                             <label
                                                 v-for="(label, key) in {
-                                                    show_newsletter: 'Newsletter Signup',
-                                                    show_social_links: 'Social Links',
-                                                    show_payment_icons: 'Payment Icons'
+                                                    show_newsletter: t('toggle_newsletter'),
+                                                    show_social_links: t('toggle_social_links'),
+                                                    show_payment_icons: t('toggle_payment_icons')
                                                 }"
                                                 :key="key"
                                                 class="relative flex items-center p-4 rounded-xl cursor-pointer transition-all"
