@@ -7,7 +7,9 @@
     "providers": [
         "Modules\\DefaultTheme\\Providers\\DefaultThemeServiceProvider"
     ],
+    "aliases": {},
     "files": [],
+    "requires": [],
     "type": "theme",
     "version": "1.0.0",
     "author": "Cartismo",
