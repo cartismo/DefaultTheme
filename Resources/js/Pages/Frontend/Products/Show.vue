@@ -16,6 +16,8 @@ import {
     ShoppingCartIcon,
     HeartIcon,
     ClipboardIcon,
+    ChatBubbleLeftRightIcon,
+    AtSymbolIcon,
 } from '@heroicons/vue/24/outline';
 import { StarIcon } from '@heroicons/vue/24/solid';
 
@@ -482,10 +484,10 @@ const showZoom = ref(false);
                     <h3 class="text-sm font-medium text-gray-900 mb-3">{{ t('product.share') }}</h3>
                     <div class="flex gap-3">
                         <a :href="`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 011-1h3v-4h-3a5 5 0 00-5 5v2.01h-2l-.396 3.98h2.396v8.01z"/></svg>
+                            <ChatBubbleLeftRightIcon class="w-5 h-5" />
                         </a>
                         <a :href="`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`" target="_blank" rel="noopener noreferrer" class="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <AtSymbolIcon class="w-5 h-5" />
                         </a>
                         <button @click="navigator.clipboard.writeText(window.location.href)" class="w-10 h-10 bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors">
                             <ClipboardIcon class="w-5 h-5" />

@@ -17,14 +17,17 @@ import {
     HeartIcon,
     UserIcon,
     HomeIcon,
+    ArchiveBoxIcon,
     ShoppingBagIcon,
     Cog6ToothIcon,
     ArrowRightOnRectangleIcon,
     BellIcon,
     ShoppingCartIcon,
+    Squares2X2Icon,
     XMarkIcon,
     EyeIcon,
     TruckIcon,
+    ArrowPathIcon,
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -102,6 +105,40 @@ const topMenuItems = computed(() => {
 const menuCategories = computed(() => {
     return (props.categories || []).filter(c => c.show_in_menu).slice(0, 8);
 });
+
+const normalizeCategoryIcon = (icon) => (icon || '').trim().toLowerCase();
+
+const categoryIconComponent = (icon) => {
+    const normalized = normalizeCategoryIcon(icon);
+
+    if (['archive-box', 'box', 'fa-solid fa-box', 'fa-box'].includes(normalized)) {
+        return ArchiveBoxIcon;
+    }
+
+    if (['home', 'house', 'fa-solid fa-house', 'fa-house'].includes(normalized)) {
+        return HomeIcon;
+    }
+
+    if (['squares-2x2', 'grid', 'category', 'fa-solid fa-grid-2', 'fa-grid-2'].includes(normalized)) {
+        return Squares2X2Icon;
+    }
+
+    return null;
+};
+
+const categoryIconText = (icon) => {
+    const normalized = normalizeCategoryIcon(icon);
+
+    if (!normalized || normalized.includes('<') || normalized.includes('>') || normalized.includes('fa-')) {
+        return null;
+    }
+
+    if (/[a-z0-9]/i.test(icon)) {
+        return null;
+    }
+
+    return icon.length <= 8 ? icon : null;
+};
 
 // States
 const showUserDropdown = ref(false);
@@ -447,10 +484,7 @@ onUnmounted(() => {
                             >
                                 <!-- Loading -->
                                 <div v-if="isSearching" class="flex items-center justify-center py-6">
-                                    <svg class="animate-spin h-6 w-6" :style="{ color: primaryColor }" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
+                                    <ArrowPathIcon class="animate-spin h-6 w-6" :style="{ color: primaryColor }" />
                                 </div>
 
                                 <!-- Results -->
@@ -708,7 +742,12 @@ onUnmounted(() => {
                                                 class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:text-gray-900 group/item"
                                             >
                                                 <span class="flex items-center">
-                                                    <span v-if="category.icon" class="mr-2" v-html="category.icon"></span>
+                                                    <component
+                                                        :is="categoryIconComponent(category.icon)"
+                                                        v-if="categoryIconComponent(category.icon)"
+                                                        class="w-4 h-4 mr-2 text-gray-400"
+                                                    />
+                                                    <span v-else-if="categoryIconText(category.icon)" class="mr-2">{{ categoryIconText(category.icon) }}</span>
                                                     {{ category.name }}
                                                 </span>
                                                 <ChevronRightIcon v-if="category.children?.length" class="w-4 h-4 text-gray-400 group-hover/item:text-gray-600" />

@@ -17,6 +17,8 @@ import {
     BanknotesIcon,
     BuildingLibraryIcon,
     CreditCardIcon,
+    ArrowPathIcon,
+    ArchiveBoxIcon,
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -51,6 +53,14 @@ const steps = computed(() => [
     { number: 2, title: t('checkout.step_shipping'), icon: 'truck' },
     { number: 3, title: t('checkout.step_payment'), icon: 'credit-card' },
 ]);
+
+const shippingMethodIcon = (method) => {
+    if (method?.icon === 'archive-box') {
+        return ArchiveBoxIcon;
+    }
+
+    return TruckIcon;
+};
 
 // Get default form data
 const getDefaultFormData = () => ({
@@ -822,13 +832,11 @@ onMounted(() => {
                                             :class="form.shipping_method_id === method.id ? 'bg-opacity-10' : 'bg-gray-100 group-hover:bg-gray-200'"
                                             :style="form.shipping_method_id === method.id ? { backgroundColor: (method.primary_color || primaryColor) + '15' } : {}"
                                         >
-                                            <span
-                                                v-if="method.logo_svg"
+                                            <component
+                                                :is="shippingMethodIcon(method)"
                                                 class="w-8 h-8"
                                                 :style="{ color: method.primary_color || '#374151' }"
-                                                v-html="method.logo_svg"
-                                            ></span>
-                                            <TruckIcon v-else class="w-7 h-7 text-gray-600" />
+                                            />
                                         </div>
 
                                         <!-- Method Info -->
@@ -857,10 +865,7 @@ onMounted(() => {
                                                 <div class="text-right ml-4 flex-shrink-0">
                                                     <template v-if="form.shipping_method_id === method.id && method.delivery_form?.component">
                                                         <span v-if="calculatingShipping" class="text-sm text-gray-400">
-                                                            <svg class="animate-spin h-4 w-4 inline" fill="none" viewBox="0 0 24 24">
-                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                                            </svg>
+                                                            <ArrowPathIcon class="animate-spin h-4 w-4 inline" />
                                                         </span>
                                                         <span v-else-if="awaitingDeliveryDetails" class="text-sm text-gray-400 italic">
                                                             {{ t('checkout.calculating') }}
@@ -1110,10 +1115,7 @@ onMounted(() => {
                                     class="px-8 py-3 text-white rounded-lg font-medium flex items-center disabled:opacity-50"
                                     :style="{ backgroundColor: primaryColor }"
                                 >
-                                    <svg v-if="isProcessing" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
+                                    <ArrowPathIcon v-if="isProcessing" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
                                     {{ isProcessing ? t('checkout.processing') : t('checkout.complete_order') }}
                                 </button>
                             </div>
@@ -1151,10 +1153,7 @@ onMounted(() => {
                                     <span>{{ t('checkout.shipping') }}</span>
                                     <span class="flex items-center">
                                         <template v-if="calculatingShipping">
-                                            <svg class="animate-spin h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
+                                            <ArrowPathIcon class="animate-spin h-4 w-4 mr-2 text-gray-400" />
                                         </template>
                                         <template v-else-if="awaitingDeliveryDetails">
                                             <span class="text-gray-400 italic">{{ t('checkout.calculating_shipping') }}</span>

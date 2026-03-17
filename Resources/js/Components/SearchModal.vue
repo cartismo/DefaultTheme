@@ -4,7 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
 import { useCurrency } from '@/Composables/useCurrency';
 import { useThemeTranslations } from '../Composables/useThemeTranslations';
-import { MagnifyingGlassIcon, XMarkIcon, FaceFrownIcon } from '@heroicons/vue/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon, FaceFrownIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     show: Boolean,
@@ -139,10 +139,7 @@ const clickResult = () => {
 
                 <div class="max-h-96 overflow-y-auto">
                     <div v-if="isSearching" class="flex items-center justify-center py-8">
-                        <svg class="animate-spin h-8 w-8" :style="{ color: primaryColor }" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <ArrowPathIcon class="animate-spin h-8 w-8" :style="{ color: primaryColor }" />
                     </div>
 
                     <div v-else-if="searchResults.length > 0" class="py-2">

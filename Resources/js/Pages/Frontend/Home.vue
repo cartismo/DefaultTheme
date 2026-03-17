@@ -305,14 +305,10 @@ const openQuickView = (product) => {
                     class="relative rounded-3xl overflow-hidden"
                     :style="{ background: `linear-gradient(135deg, ${primaryColor} 0%, #1e1b4b 100%)` }"
                 >
-                    <div class="absolute inset-0 opacity-10">
-                        <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                                <circle cx="10" cy="10" r="2" fill="white" />
-                            </pattern>
-                            <rect x="0" y="0" width="100" height="100" fill="url(#pattern)" />
-                        </svg>
-                    </div>
+                    <div
+                        class="absolute inset-0 opacity-10"
+                        style="background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px); background-size: 20px 20px;"
+                    />
                     <div class="relative grid md:grid-cols-2 gap-8 p-8 md:p-12 lg:p-16">
                         <div class="text-white">
                             <span class="inline-block px-4 py-1 bg-white/20 rounded-full text-sm font-medium mb-4">
