@@ -1,7 +1,7 @@
 {
     "name": "cartismo/defaulttheme-module",
     "description": "The default Cartismo storefront theme. Clean, fast, and fully responsive.",
-    "type": "laravel-module",
+    "type": "cartismo-module",
     "license": "MIT",
     "authors": [
         {
